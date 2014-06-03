@@ -487,7 +487,7 @@ stars = function (){
             var obj
 
             // 如果没有参数, 默认为control
-            if (args.length == 0) {
+            if (!args.length) {
                 return new controlMap[t]
             }
 
