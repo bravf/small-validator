@@ -5,7 +5,8 @@
 
 stars = function (){
     var okMsg = ''
-    
+
+    //记录所有对象
     var objCache = {
         id : 0,
         table : [],
@@ -131,6 +132,7 @@ stars = function (){
     //input[text],textarea control实现
     TextControl.prototype = {
         type : 'TextControl',
+        config : Function.prototype,
         init : function (ele, tipMsg, tipEle){
             this.element = getElement(ele)
             this.rules = []
@@ -144,6 +146,7 @@ stars = function (){
             }
 
             this.initNxEvent()
+            this.config()
         },
         //注销掉
         destory : function (){
@@ -158,12 +161,14 @@ stars = function (){
             this.element.on('error', function (){
                 func(me)
             })
+            return this
         },
         onSuccess : function (func){
             var me = this
             this.element.on('success', function (){
                 func(me)
             })
+            return this
         },
         doCallback : function (ret){
             this.element.trigger(ret ? 'success' : 'error')
@@ -196,7 +201,9 @@ stars = function (){
         },
         showTip : function (msg){
             this.msg = msg
-            if (this.parent) return
+            if (this.parent) {
+                return
+            }
 
             if (!this.tipElement){
                 this.tipElement = $('<span/>').appendTo(this.element.parent())
@@ -246,12 +253,13 @@ stars = function (){
             .off('nxblur').on('nxblur', function (){
                 me.check()
             })
+
             return this
         }
     }
 
     //select control实现
-    SelectControl.prototype = {
+    var SelectControlPrototype = {
         type : 'SelectControl',
         bindEvents : function (){
             var me = this
@@ -264,10 +272,11 @@ stars = function (){
             return this
         }
     }
-    SelectControl.prototype = $.extend(SelectControl.prototype, TextControl.prototype)
+    SelectControl.prototype = $.extend({}, TextControl.prototype)
+    SelectControl.prototype = $.extend(SelectControl.prototype, SelectControlPrototype)
 
     //radio control实现
-    RadioControl.prototype = {
+    var RadioControlPrototype = {
         type : 'RadioControl',
         bindEvents : function (){
             var me = this
@@ -277,10 +286,11 @@ stars = function (){
             return this
         }
     }
-    RadioControl.prototype = $.extend(RadioControl.prototype, TextControl.prototype)
+    RadioControl.prototype = $.extend({}, TextControl.prototype)
+    RadioControl.prototype = $.extend(RadioControl.prototype, RadioControlPrototype)
 
     //checkbox control实现
-    CheckboxControl.prototype = {
+    var CheckboxControlPrototype = {
         type : 'CheckboxControl',
         bindEvents : function (){
             var me = this
@@ -290,17 +300,20 @@ stars = function (){
             return this
         }
     }
-    CheckboxControl.prototype = $.extend(CheckboxControl.prototype, TextControl.prototype)
+    CheckboxControl.prototype = $.extend({}, TextControl.prototype)
+    CheckboxControl.prototype = $.extend(CheckboxControl.prototype, CheckboxControlPrototype)
 
     //control逻辑与实现(这个组表示依赖验证，比如a,b,c一组，那么a.check会触发组内所有人的check)
-    AndControl.prototype = {
+    var AndControlPrototype = {
         type : 'AndControl',
         init : function (){
             this.msg = ''
+            this.element = $({})
             this.parent = null
 
             this.controls = []
             this.add.apply(this, arguments)
+            this.config()
         },
         add : function (){
             var args = toArray(arguments)
@@ -315,7 +328,6 @@ stars = function (){
             if (!this.controls.length) {
                 return true
             }
-            this.element = this.controls[0].element
 
             for (var i=0; i<this.controls.length; i++){
                 var control = this.controls[i]
@@ -333,16 +345,16 @@ stars = function (){
             return true
         }
     }
-     AndControl.prototype = $.extend(AndControl.prototype, TextControl.prototype)
+     AndControl.prototype = $.extend({}, TextControl.prototype)
+     AndControl.prototype = $.extend(AndControl.prototype, AndControlPrototype)
 
     //control逻辑或实现
-    OrControl.prototype = {
+    var OrControlPrototype = {
         type : 'OrControl',
         checkIt : function (){
             if (!this.controls.length){
                 return true
             }
-            this.element = this.controls[0].element
 
             for (var i=0; i<this.controls.length; i++){
                 var control = this.controls[i]
@@ -360,46 +372,26 @@ stars = function (){
             return false
         }
     }
-    OrControl.prototype = $.extend(OrControl.prototype, AndControl.prototype)
+    OrControl.prototype = $.extend({}, AndControl.prototype)
+    OrControl.prototype = $.extend(OrControl.prototype, OrControlPrototype)
 
     //表示一个表单，实际上并非一定要是form，也可以表示一个表单group，它和AndControl的区别在于子control的check不会联动其他control
-    FormControl.prototype = {
+    var FormControlPrototype = {
         type : 'FormControl',
         init : function (ele){
             this.element = getElement(ele)
             this.controls = []
             this.bindEvents()
-            //默认选用check1
-            this._check = this.check1
+            this.config()
         },
         add : function (){
             this.controls = this.controls.concat(toArray(arguments))
-            return this
-        },
-        //设置check模式，默认为none(检测到失败就停止)，可选all(检测全部)
-        setCheckType : function (flag){
-            this._check = (flag=='all') ? this.check2 : this.check1
             return this
         },
         check : function (){
             if (this.isDestoried()){
                 return true
             }
-            this._check()
-        },
-        check1 : function (){
-            for (var i=0; i<this.controls.length; i++){
-                var control = this.controls[i]
-                var ret = control.check()
-                if (!ret) {
-                    this.doCallback(false)
-                    return false
-                }
-            }
-            this.doCallback(true)
-            return true
-        },
-        check2 : function (){
             var ok = true
             for (var i=0; i<this.controls.length; i++){
                 var control = this.controls[i]
@@ -418,7 +410,8 @@ stars = function (){
             })
         }
     }
-    FormControl.prototype = $.extend(FormControl.prototype, TextControl.prototype)
+    FormControl.prototype = $.extend({}, TextControl.prototype)
+    FormControl.prototype = $.extend(FormControl.prototype, FormControlPrototype)
 
     //快捷方式
     //根据参数类型自动生成一个Rule对象
@@ -565,6 +558,35 @@ stars = function (){
         })
 
         return orControlObj
+    }
+
+    //全局额外交互设置
+    var errorCss = {'border-color':'red'}
+    var successCss = {'border-color':''}
+
+    TextControl.prototype.config = function (){
+        var me = this
+        me.element.on('error', function (){
+            me.element.css(errorCss)
+        }).on('success', function (){
+            me.element.css(successCss)
+        })
+    }
+    OrControl.prototype.config = AndControl.prototype.config = function (){
+        var me = this
+        function setChildren(controls){
+            $(controls).each(function (){
+                if (this.controls && this.controls.length){
+                    setChildren(this.controls)
+                }
+                else {
+                    this.element.css(successCss)
+                }
+            })
+        }
+        me.element.on('success', function (){
+            setChildren(me.controls)
+        })
     }
 
     return {
