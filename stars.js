@@ -4,6 +4,8 @@
  */
 
 stars = function (){
+    var okMsg = ''
+    
     var objCache = {
         id : 0,
         table : [],
@@ -29,8 +31,6 @@ stars = function (){
     function getElement(ele){
         return $(ele)
     }
-    
-    var okMsg = ''
 
     //rules声明
     var RegRule = myclass()
