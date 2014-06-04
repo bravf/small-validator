@@ -78,25 +78,30 @@
 with (stars){
     var formControl = control('.test-form').add(
         or(
-            control('#isNotCountry').addRule(required()),
+            control('#isNotCountry').add(required()),
             and(
-                control('#isCountry').addRule(required()),
+                control('#isCountry').add(required()),
                 and(
-                    control('#countryName').addRule(required('请填写国家名称')),
-                    control('#countryCode').addRule(
-                        rule(/^[a-z]{3,5}$/, '请填写3-5位的国家code')
+                    control('#countryName').add(required('请填写国家名称')),
+                    control('#countryCode').add(
+                        or(
+                            rule(/^[a-z]{3,5}$/, '请填写3-5位的由小写字母组成的国家code,或者填写javascript'),
+                            rule(function (control){
+                                return control.val() == 'javascript'
+                            }, '请填写3-5位的由小写字母组成的国家code,或者填写javascript')
+                        )
                     ),
                     or(
-                        control('#isProvince').addRule(not(required())),
+                        control('#isProvince').add(not(required())),
                         and(
-                            control('#isProvince').addRule(required()),
+                            control('#isProvince').add(required()),
                             and(
-                                control('#provinceName').addRule(required('请填写省份名称')),
+                                control('#provinceName').add(required('请填写省份名称')),
                                 or(
-                                    control('#isCity').addRule(not(required())),
+                                    control('#isCity').add(not(required())),
                                     and(
-                                        control('#isCity').addRule(required()),
-                                        control('#cityName').addRule(required('请填写城市名称'))
+                                        control('#isCity').add(required()),
+                                        control('#cityName').add(required('请填写城市名称'))
                                     )
                                 )
                             )

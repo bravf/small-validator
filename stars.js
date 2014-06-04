@@ -195,7 +195,7 @@ stars = function (){
             this.tipElement = getElement(tipEle)
             return this
         },
-        addRule : function (){
+        add : function (){
             this.rules = this.rules.concat(toArray(arguments))
             return this
         },
@@ -554,7 +554,7 @@ stars = function (){
 
         elements.each(function (){
             var me = $(this)
-            orControlObj.add(control(me).addRule(required(msg)))
+            orControlObj.add(control(me).add(required(msg)))
         })
 
         return orControlObj
