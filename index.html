@@ -35,12 +35,14 @@
     <div class="test-form" data-stars-type="form">
         <div class="box">
             <div class="line">
-                <input type="checkbox" id="isCountry"/>所在国家信息
+                <input type="radio" name="country" id="isNotCountry" checked/>不选择国家
+                <input type="radio" name="country" id="isCountry"/>选择国家
             </div>
 
             <div class="box">
                 <div class="line">
-                    国家名称：<input type="text" id="countryName" placeholder="国家"/>
+                    国家名称：<input type="text" id="countryName" placeholder="国家名称"/>
+                    国家代号：<input type="text" id="countryCode" placeholder="国家代号"/>
                 </div>
                 <div class="line">
                     <input type="checkbox" id="isProvince"/>所在省份信息
@@ -76,11 +78,14 @@
 with (stars){
     var formControl = control('.test-form').add(
         or(
-            control('#isCountry').addRule(not(required())),
+            control('#isNotCountry').addRule(required()),
             and(
                 control('#isCountry').addRule(required()),
                 and(
                     control('#countryName').addRule(required('请填写国家名称')),
+                    control('#countryCode').addRule(
+                        rule(/^[a-z]{3,5}$/, '请填写3-5位的国家code')
+                    ),
                     or(
                         control('#isProvince').addRule(not(required())),
                         and(
