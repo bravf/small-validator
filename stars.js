@@ -294,7 +294,7 @@ stars = function (){
         type : 'CheckboxControl',
         bindEvents : function (){
             var me = this
-            this.element.off('nxclick').on('nxclick', function (){
+            this.element.off('nxchange').on('nxchange', function (){
                 me.check()
             })
             return this
