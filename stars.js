@@ -561,15 +561,17 @@ stars = function (){
     }
 
     //全局额外交互设置
-    var errorCss = {'border-color':'red'}
-    var successCss = {'border-color':''}
+    var css = {
+        error : {'border-color':'red'},
+        success : {'border-color':''}
+    }
 
     TextControl.prototype.config = function (){
         var me = this
         me.element.on('error', function (){
-            me.element.css(errorCss)
+            me.element.css(css.error)
         }).on('success', function (){
-            me.element.css(successCss)
+            me.element.css(css.success)
         })
     }
     OrControl.prototype.config = AndControl.prototype.config = function (){
@@ -580,7 +582,7 @@ stars = function (){
                     setChildren(this.controls)
                 }
                 else {
-                    this.element.css(successCss)
+                    this.element.css(css.success)
                 }
             })
         }
@@ -591,6 +593,7 @@ stars = function (){
 
     return {
         getObj : objCache.getObj,
+        css : css,
 
         RegRule : RegRule,
         FuncRule : FuncRule,
