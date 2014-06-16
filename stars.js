@@ -561,17 +561,30 @@ stars = function (){
     }
 
     //全局额外交互设置
+    function createStyle(styleText){
+        var style = document.createElement('style')
+        style.type = 'text/css'
+
+        document.body.appendChild(style)
+        if (style.styleSheet){
+            style.styleSheet.cssText = styleText
+        }
+        else{
+            style.appendChild(document.createTextNode(styleText))
+        }
+    }
+    createStyle('.stars-control-error{border-color:red}')
+
     var css = {
-        error : {'border-color':'red'},
-        success : {'border-color':''}
+        controlError : 'stars-control-error'
     }
 
     TextControl.prototype.config = function (){
         var me = this
         me.element.on('error', function (){
-            me.element.css(css.error)
+            me.element.addClass(css.controlError)
         }).on('success', function (){
-            me.element.css(css.success)
+            me.element.removeClass(css.controlError)
         })
     }
     OrControl.prototype.config = AndControl.prototype.config = function (){
@@ -582,7 +595,7 @@ stars = function (){
                     setChildren(this.controls)
                 }
                 else {
-                    this.element.css(css.success)
+                    this.element.removeClass(css.controlError)
                 }
             })
         }
