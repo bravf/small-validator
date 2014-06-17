@@ -46,7 +46,10 @@
             <input type="text" data-stars-rules="number range_5_11" data-stars-msg="请填写5到10个数字" placeholder="5到10个数字"/>
         </div>
         <div class="box">
-            <input type="text" data-stars-rules="regexp_^[a-z]{3,5}$" data-stars-msg="请填写3-5个字母" placeholder="3到5个字母"/>
+            <input type="text" id="text1" data-stars-rules="regexp_^[a-z]{3,5}$" data-stars-msg="请填写3-5个字母" placeholder="3到5个字母"/>
+        </div>
+        <div class="box">
+            <input type="text" data-stars-rules="same_#text1" data-stars-msg="和上一个框框内容一样" placeholder="3到5个字母"/>
         </div>
         <button id="btn">提交</button>
     </div>

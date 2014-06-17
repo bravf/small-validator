@@ -43,21 +43,26 @@ starsTool = function (){
                     return
                 }
 
+                var arr = this.split('_')
+
                 //规则判断
                 if (this=='required'){
                     rule = stars.required(ruleMsg)
                 }
                 else if (this.slice(0, 5)=='range'){
-                    var arr = this.split('_')
                     rule = stars.length([arr[1], arr[2]], ruleMsg)
                 }
                 else if (this.slice(0, 6)=='regexp'){
-                    var arr = this.split('_')
                     try{
                         var regexp = new RegExp(arr[1])
                         rule = stars.rule(regexp, ruleMsg)
                     }
                     catch(ex){}
+                }
+                else if (this.slice(0, 4)=='same'){
+                    rule = stars.rule(function (control){
+                        return control.val() == $(arr[1]).val()
+                    }, ruleMsg)
                 }
                 else {
                     rule = stars.rule(rulesTable[this], ruleMsg)
