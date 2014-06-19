@@ -181,7 +181,7 @@ stars = function (){
             }
 
             element.attr('data-nxevent', 'yes')
-            var events = ['click', 'blur', 'change']
+            var events = ['blur', 'change']
 
             for (var i=0; i<events.length; i++){
                 void function (evt){
@@ -280,7 +280,7 @@ stars = function (){
         type : 'RadioControl',
         bindEvents : function (){
             var me = this
-            this.element.off('nxclick').on('nxclick', function (){
+            this.element.off('nxchange').on('nxchange', function (){
                 me.check()
             })
             return this
