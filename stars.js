@@ -561,22 +561,9 @@ stars = function (){
     }
 
     //全局额外交互设置
-    function createStyle(styleText){
-        var style = document.createElement('style')
-        style.type = 'text/css'
-
-        document.body.appendChild(style)
-        if (style.styleSheet){
-            style.styleSheet.cssText = styleText
-        }
-        else{
-            style.appendChild(document.createTextNode(styleText))
-        }
-    }
-    createStyle('.stars-control-error{border-color:red}')
 
     var css = {
-        controlError : 'stars-control-error'
+        controlError : 'control-error'
     }
 
     TextControl.prototype.config = function (){
