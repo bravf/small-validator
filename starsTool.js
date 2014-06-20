@@ -4,7 +4,7 @@
  */
 starsTool = function (){
     var rulesTable = {
-        phone : /^\d{11}$/,
+        phone : /^1[0-9]{10}$/,
         number : /^\d+$/
     }
 

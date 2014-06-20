@@ -210,7 +210,7 @@ stars = function (){
             }
             this.tipElement.html(msg)
             this.tipElement[msg.length ? 'show' : 'hide']()
-            
+
             return this
         },
         val : function (){
@@ -561,7 +561,6 @@ stars = function (){
     }
 
     //全局额外交互设置
-
     var css = {
         controlError : 'control-error'
     }
