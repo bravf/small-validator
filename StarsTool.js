@@ -14,7 +14,7 @@ StarsTool = function (){
             var $form = $(form)
             var formControl = Stars.control($form)
 
-            $form.find('*[data-Stars-rules]').each(function (){
+            $form.find('*[data-stars-rules]').each(function (){
                 var controlObj = me.getControlObj($(this))
                 formControl.add(controlObj)
             })
@@ -23,9 +23,9 @@ StarsTool = function (){
         },
         getControlObj : function ($element){
             var me = this
-            var rules = $element.attr('data-Stars-rules').split(' ')
-            var ruleMsg = $element.attr('data-Stars-msg')
-            var ruleTipEle = $element.attr('data-Stars-tipEle')
+            var rules = $element.attr('data-stars-rules').split(' ')
+            var ruleMsg = $element.attr('data-stars-msg')
+            var ruleTipEle = $element.attr('data-stars-tipEle')
 
             var controlObj = Stars.control($element)
             if (ruleTipEle){

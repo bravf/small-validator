@@ -8,20 +8,20 @@
 
 先看一个常见的表单验证
 ```
-<div class="test-form" data-Stars-type="form">
+<div class="test-form" data-stars-type="form">
     <div class="box">
-        <input type="text" data-Stars-rules="required" data-Stars-msg="必填" data-Stars-tipEle=".msg1" placeholder="必填"/>
+        <input type="text" data-stars-rules="required" data-stars-msg="必填" data-stars-tipEle=".msg1" placeholder="必填"/>
         <div class="msg msg1"></div>
     </div>
     <div class="box">
-        <input type="text" data-Stars-rules="empty phone" data-Stars-msg="请填写正确的手机号" data-Stars-tipEle=".msg2" placeholder="手机号(可为空)"/>
+        <input type="text" data-stars-rules="empty phone" data-stars-msg="请填写正确的手机号" data-stars-tipEle=".msg2" placeholder="手机号(可为空)"/>
         <div class="msg msg2"></div>
     </div>
     <div class="box">
-        <input type="text" data-Stars-rules="number range_5_11" data-Stars-msg="请填写5到10个数字" placeholder="5到10个数字"/>
+        <input type="text" data-stars-rules="number range_5_11" data-stars-msg="请填写5到10个数字" placeholder="5到10个数字"/>
     </div>
     <div class="box">
-        <input type="text" data-Stars-rules="regexp_^[a-z]{3,5}$" data-Stars-msg="请填写3-5个字母" placeholder="3到5个字母"/>
+        <input type="text" data-stars-rules="regexp_^[a-z]{3,5}$" data-stars-msg="请填写3-5个字母" placeholder="3到5个字母"/>
     </div>
     <button id="btn">提交</button>
 </div>
@@ -39,7 +39,7 @@ $('#btn').on('click', function (){
 })
 </script>
 ```
-验证规则都写到相应的元素上，然后一行代码搞定，目前圈子里大部分的验证框架都这么搞，无非是data-Stars-rules里定制了更多的枚举rule，支持什么email,qq,url啥的，这个无非就是扩展StarsTool里的rulesTable，没什么新意。
+验证规则都写到相应的元素上，然后一行代码搞定，目前圈子里大部分的验证框架都这么搞，无非是data-stars-rules里定制了更多的枚举rule，支持什么email,qq,url啥的，这个无非就是扩展StarsTool里的rulesTable，没什么新意。
 
 而且由于每个人、每个项目、每个公司对这些rule的理解并不相同，比如手机号，有人觉得是11个数字就好了，有人则必须135，158什么的一大堆，所以我强烈建议大家根据自己的实际情况去构造自己的rulesTable，直接改StarsTool的代码即可。
 
