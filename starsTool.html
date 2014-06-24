@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8"/>
-    <title>stars test</title>
+    <title>Stars test</title>
     <style>
     .box{
         border: 1px solid #000;
@@ -33,23 +33,23 @@
 </head>
 <body>
     <div class="tip"></div>
-    <div class="test-form" data-stars-type="form">
+    <div class="test-form" data-Stars-type="form">
         <div class="box">
-            <input type="text" data-stars-rules="required" data-stars-msg="必填" data-stars-tipEle=".msg1" placeholder="必填"/>
+            <input type="text" data-Stars-rules="required" data-Stars-msg="必填" data-Stars-tipEle=".msg1" placeholder="必填"/>
             <div class="msg msg1"></div>
         </div>
         <div class="box">
-            <input type="text" data-stars-rules="empty phone" data-stars-msg="请填写正确的手机号" data-stars-tipEle=".msg2" placeholder="手机号(可为空)"/>
+            <input type="text" data-Stars-rules="empty phone" data-Stars-msg="请填写正确的手机号" data-Stars-tipEle=".msg2" placeholder="手机号(可为空)"/>
             <div class="msg msg2"></div>
         </div>
         <div class="box">
-            <input type="text" data-stars-rules="number range_5_11" data-stars-msg="请填写5到10个数字" placeholder="5到10个数字"/>
+            <input type="text" data-Stars-rules="number range_5_11" data-Stars-msg="请填写5到10个数字" placeholder="5到10个数字"/>
         </div>
         <div class="box">
-            <input type="text" id="text1" data-stars-rules="regexp_^[a-z]{3,5}$" data-stars-msg="请填写3-5个字母" placeholder="3到5个字母"/>
+            <input type="text" id="text1" data-Stars-rules="regexp_^[a-z]{3,5}$" data-Stars-msg="请填写3-5个字母" placeholder="3到5个字母"/>
         </div>
         <div class="box">
-            <input type="text" data-stars-rules="same_#text1" data-stars-msg="和上一个框框内容一样" placeholder="3到5个字母"/>
+            <input type="text" data-Stars-rules="same_#text1" data-Stars-msg="和上一个框框内容一样" placeholder="3到5个字母"/>
         </div>
         <button id="btn">提交</button>
     </div>
@@ -57,11 +57,11 @@
 </html>
 
 <script src="jquery.js"></script>
-<script src="stars.js"></script>
-<script src="starsTool.js"></script>
+<script src="Stars.js"></script>
+<script src="StarsTool.js"></script>
 
 <script>
-var formControl = starsTool.get('.test-form')
+var formControl = StarsTool.get('.test-form')
 $('#btn').on('click', function (){
     alert(formControl.check())
 })
