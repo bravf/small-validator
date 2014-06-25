@@ -36,6 +36,7 @@ Stars = function (){
     //rules声明
     var RegRule = myclass()
     var FuncRule = myclass()
+    var IORule = myclass()
     var AndRule = myclass()
     var OrRule = myclass()
     var NotRule = myclass()
@@ -59,6 +60,34 @@ Stars = function (){
         },
         check : function (control){
             return this.func(control)
+        }
+    }
+    IORule.prototype = {
+        type : 'IORule',
+        init : function (url, callback, msg){
+            this.url = url
+            this.callback = callback
+            this.msg = msg || ''
+            this.status = true
+        }
+        ,check : function (control){
+            var me = this
+
+            //如果是io回调触发的重新check直接返回status
+            if (control.io){
+                control.io = false
+                return me.status
+            }
+
+            var url = this.url + control.val() + '&t=' + (new Date).getTime()
+
+            $.getJSON(url, function (data){
+                me.status = me.callback(control, data)
+                control.io = true
+                control.check()
+            })
+
+            return true
         }
     }
     NotRule.prototype = {
@@ -415,13 +444,16 @@ Stars = function (){
 
     //快捷方式
     //根据参数类型自动生成一个Rule对象
-    function rule(a, b){
+    function rule(a, b, c){
         var t = $.type(a)
         if (t == 'regexp'){
             return new RegRule(a, b)
         }
         else if (t == 'function'){
             return new FuncRule(a, b)
+        }
+        else if (t == 'string'){
+            return new IORule(a, b, c)
         }
         throw 'Rule error:' + a + ',' + b
     }
@@ -596,6 +628,7 @@ Stars = function (){
 
         RegRule : RegRule,
         FuncRule : FuncRule,
+        IORule : IORule,
         NotRule : NotRule,
         AndRule : AndRule,
         OrRule : OrRule,
