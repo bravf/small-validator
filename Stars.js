@@ -46,7 +46,7 @@ Stars = function (){
         type : 'RegRule',
         init : function (regexp, msg){
             this.regexp = regexp
-            this.msg    = msg || ''
+            this.msg = msg || ''
         },
         check : function (control){
             return this.regexp.test(control.val())
@@ -56,7 +56,7 @@ Stars = function (){
         type : 'FuncRule',
         init : function (func, msg){
             this.func = func
-            this.msg    = msg || ''
+            this.msg = msg || ''
         },
         check : function (control){
             return this.func(control)
