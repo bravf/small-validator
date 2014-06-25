@@ -94,7 +94,7 @@ Stars = function (){
         type : 'NotRule',
         init : function (rule, msg){
             this.rule = rule
-            this.msg    = msg || ''
+            this.msg = msg || ''
         },
         check : function (control){
             return !this.rule.check(control)
