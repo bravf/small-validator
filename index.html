@@ -41,7 +41,7 @@
 
             <div class="box">
                 <div class="line">
-                    国家名称：<input type="text" id="countryName" placeholder="国家名称"/>
+                    国家名称：<input type="text" id="countryName" placeholder="国家名称"/><span id="countryNameTip"></span>
                     国家代号：<input type="text" id="countryCode" placeholder="国家代号"/>
                 </div>
                 <div class="line">
@@ -83,7 +83,7 @@ with (Stars){
             and(
                 control('#isCountry').add(required()),
                 and(
-                    control('#countryName').add(required('请填写国家名称')),
+                    control('#countryName').add(required('请填写国家名称')).setTipEle('#countryNameTip'),
                     control('#countryCode').add(
                         or(
                             rule(/^[a-z]{3,5}$/, '请填写3-5位的由小写字母组成的国家code,或者填写javascript'),

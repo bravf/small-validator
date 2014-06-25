@@ -230,13 +230,11 @@ Stars = function (){
         },
         showTip : function (msg){
             this.msg = msg
-            if (this.parent) {
+
+            if (!this.tipElement){
                 return
             }
 
-            if (!this.tipElement){
-                this.tipElement = $('<span/>').appendTo(this.element.parent())
-            }
             this.tipElement.html(msg)
             this.tipElement[msg.length ? 'show' : 'hide']()
 
