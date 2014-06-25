@@ -87,7 +87,7 @@ Stars = function (){
                 control.check()
             })
 
-            return true
+            return me.status
         }
     }
     NotRule.prototype = {
