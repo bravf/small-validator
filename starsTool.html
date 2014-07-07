@@ -43,13 +43,16 @@
             <div class="msg msg2"></div>
         </div>
         <div class="box">
-            <input type="text" data-stars-rules="number range_5_11" data-stars-msg="请填写5到10个数字" placeholder="5到10个数字"/>
+            <input type="text" data-stars-rules="number range_5_11" data-stars-msg="请填写5到10个数字" data-stars-tipEle=".msg3" placeholder="5到10个数字"/>
+            <div class="msg msg3"></div>
         </div>
         <div class="box">
-            <input type="text" id="text1" data-stars-rules="regexp_^[a-z]{3,5}$" data-stars-msg="请填写3-5个字母" placeholder="3到5个字母"/>
+            <input type="text" id="text1" data-stars-rules="regexp_^[a-z]{3,5}$" data-stars-msg="请填写3-5个字母" data-stars-tipEle=".msg4" placeholder="3到5个字母"/>
+            <div class="msg msg4"></div>
         </div>
         <div class="box">
-            <input type="text" data-stars-rules="same_#text1" data-stars-msg="和上一个框框内容一样" placeholder="3到5个字母"/>
+            <input type="text" data-stars-rules="same_#text1" data-stars-msg="和上一个框框内容一样" data-stars-tipEle=".msg5" placeholder="3到5个字母"/>
+            <div class="msg msg5"></div>
         </div>
         <button id="btn">提交</button>
     </div>
