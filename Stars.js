@@ -162,10 +162,9 @@ Stars = function (){
     TextControl.prototype = {
         type : 'TextControl',
         config : Function.prototype,
-        init : function (ele, tipMsg, tipEle){
+        init : function (ele, tipEle){
             this.element = getElement(ele)
             this.rules = []
-            this.tipMsg = tipMsg || ''
             this.msg = ''
             this.parent = null
             this.bindEvents()
@@ -274,10 +273,7 @@ Stars = function (){
         },
         bindEvents : function (){
             var me = this
-            this.element.on('focus', function (){
-                me.showTip(me.tipMsg)
-            })
-            .off('nxblur').on('nxblur', function (){
+            this.element.off('nxblur').on('nxblur', function (){
                 me.check()
             })
 
@@ -290,10 +286,7 @@ Stars = function (){
         type : 'SelectControl',
         bindEvents : function (){
             var me = this
-            this.element.on('focus', function (){
-                me.showTip(me.tipMsg)
-            })
-            .off('nxchange').on('nxchange', function (){
+            this.element.off('nxchange').on('nxchange', function (){
                 me.check()
             })
             return this
@@ -579,7 +572,7 @@ Stars = function (){
 
     //针对radio、checkbox组，至少选一个，返回一个逻辑或的组control
     function any(eleList, msg){
-        var elements = getElement(eleList)
+        var elements =  getElement(eleList)
         var orControlObj = new OrControl
 
         elements.each(function (){
