@@ -458,7 +458,7 @@ Stars = function (){
     function control(ele){
         var ele = getElement(ele)
 
-        if (ele.attr('data-stars-type') == 'form'){
+        if ( (ele[0].tagName.toLowerCase()=='form') || (ele.attr('data-stars-type')=='form') ){
             return new FormControl(ele)
         }
 
@@ -467,7 +467,6 @@ Stars = function (){
 
         switch (eleType){
             case "text":
-            case "file":
             case "hidden":
             case "textarea":
             case "password":
@@ -480,6 +479,7 @@ Stars = function (){
 
             case "select-one":
             case "select-multiple":
+            case "file":
                 obj = new SelectControl(ele)
                 break
 
@@ -533,6 +533,9 @@ Stars = function (){
             }
             else if (eleType == 'select-one'){
                 return element.val() != '-1'
+            }
+            else if (eleType == 'file'){
+                return element[0].files.length != 0
             }
             else {
                 return $.trim(element.val()) != ''
