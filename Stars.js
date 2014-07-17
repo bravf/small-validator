@@ -593,12 +593,14 @@ Stars = function (){
 
     TextControl.prototype.config = function (){
         var me = this
-        me.element.on('error', function (){
+        var element = me.element
+
+        element.on('error', function (){
             setTimeout(function (){
-                me.element.addClass(css.controlError)
+                element.addClass(css.controlError)
             }, 0)
         }).on('success', function (){
-            me.element.removeClass(css.controlError)
+            element.removeClass(css.controlError)
         })
     }
     OrControl.prototype.config = AndControl.prototype.config = function (){
