@@ -594,7 +594,9 @@ Stars = function (){
     TextControl.prototype.config = function (){
         var me = this
         me.element.on('error', function (){
-            me.element.addClass(css.controlError)
+            setTimeout(function (){
+                me.element.addClass(css.controlError)
+            }, 0)
         }).on('success', function (){
             me.element.removeClass(css.controlError)
         })
@@ -612,6 +614,9 @@ Stars = function (){
             })
         }
         me.element.on('success', function (){
+            setChildren(me.controls)
+        })
+        .on('error', function (){
             setChildren(me.controls)
         })
     }
