@@ -10,11 +10,11 @@ Stars = function (){
     var objCache = {
         id : 0,
         table : [],
-        pushObj : function (obj){
+        push : function (obj){
             obj.id = this.id++
             this.table[this.id] = obj
         },
-        getObj : function (id){
+        get : function (id){
             return this.table[id]
         }
     }
@@ -22,7 +22,7 @@ Stars = function (){
     //辅助方法
     function myclass(){
         return function (){
-            objCache.pushObj(this)
+            objCache.push(this)
             this.init.apply(this, arguments)
         }
     }
@@ -633,7 +633,7 @@ Stars = function (){
     }
 
     return {
-        getObj : objCache.getObj,
+        getObj : objCache.get,
         css : css,
 
         RegRule : RegRule,
