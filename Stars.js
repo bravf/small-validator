@@ -594,7 +594,7 @@ Stars = function (){
         controlError : 'control-error'
     }
 
-    TextControl.prototype.config = RadioControl.prototype.config = function (){
+    TextControl.prototype.config = function (){
         var me = this
         var element = me.element
         var error = css.controlError
