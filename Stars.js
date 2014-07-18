@@ -164,6 +164,7 @@ Stars = function (){
         config : Function.prototype,
         init : function (ele, tipEle){
             this.element = getElement(ele)
+            this.event = $('<div/>')
             this.rules = []
             this.msg = ''
             this.parent = null
@@ -186,20 +187,20 @@ Stars = function (){
         //设置回调
         onError : function (func){
             var me = this
-            this.element.on('error', function (){
+            this.event.on('error', function (){
                 func(me)
             })
             return this
         },
         onSuccess : function (func){
             var me = this
-            this.element.on('success', function (){
+            this.event.on('success', function (){
                 func(me)
             })
             return this
         },
         doCallback : function (ret){
-            this.element.trigger(ret ? 'success' : 'error')
+            this.event.trigger(ret ? 'success' : 'error')
             return this
         },
         initNxEvent : function (){
@@ -328,7 +329,8 @@ Stars = function (){
         type : 'AndControl',
         init : function (){
             this.msg = ''
-            this.element = $({})
+            this.element = $('<div/>')
+            this.event = $('<div/>')
             this.parent = null
 
             this.controls = []
@@ -400,6 +402,7 @@ Stars = function (){
         type : 'FormControl',
         init : function (ele){
             this.element = getElement(ele)
+            this.event = $('<div/>')
             this.controls = []
             this.bindEvents()
             this.config()
@@ -591,35 +594,41 @@ Stars = function (){
         controlError : 'control-error'
     }
 
-    TextControl.prototype.config = function (){
+    TextControl.prototype.config = RadioControl.prototype.config = function (){
         var me = this
         var element = me.element
+        var error = css.controlError
 
-        element.on('error', function (){
-            setTimeout(function (){
-                element.addClass(css.controlError)
-            }, 0)
-        }).on('success', function (){
-            element.removeClass(css.controlError)
-        })
-    }
-    OrControl.prototype.config = AndControl.prototype.config = function (){
-        var me = this
-        function setChildren(controls){
-            $(controls).each(function (){
-                if (this.controls && this.controls.length){
-                    setChildren(this.controls)
-                }
-                else {
-                    this.element.removeClass(css.controlError)
-                }
-            })
-        }
-        me.element.on('success', function (){
-            setChildren(me.controls)
+        me.event.on('success', function (){
+            element.removeClass(error)
         })
         .on('error', function (){
-            setChildren(me.controls)
+            element.addClass(error)
+
+            var parent = me.parent
+            var topParent
+
+            while (parent){
+                topParent = parent
+                parent = parent.parent
+            }
+
+            if (topParent){
+                if (topParent.errorControl){
+                    topParent.errorControl.element.removeClass(error)
+                }
+                topParent.errorControl = me
+            }
+        })
+    }
+
+    OrControl.prototype.config = AndControl.prototype.config = function (){
+        var me = this
+        me.event.on('success', function (){
+            if (me.errorControl){
+                me.errorControl.element.removeClass(css.controlError)
+                me.errorControl = null
+            }
         })
     }
 
