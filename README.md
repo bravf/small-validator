@@ -1,7 +1,5 @@
 # 前端验证框架Stars
-
-标签（空格分隔）： javascript
-
+[API篇](https://www.zybuluo.com/bravf/note/17097)
 ---
 
 ## 牛刀也可杀鸡
