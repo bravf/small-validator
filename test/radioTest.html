@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Stars test</title>
+    <style>
+    .box{
+        border: 1px solid #000;
+        padding: 5px;
+    }
+    .box .box{
+        margin-left: 10px;
+    }
+    .line{
+        padding: 10px 0;
+    }
+    .tip{
+        position: fixed;
+        top: 10px;
+        left:500px;
+        color: red;
+    }
+    input[type="text"]{
+        width: 200px;
+        line-height: 24px;
+        border: 1px solid #666;
+    }
+    .control-error{
+        border-color: red!important;
+    }
+    </style>
+</head>
+<body>
+<dl>
+    <input type="radio" name="radio1" class="radio1"> <input type="input1" class="input1"/><br>
+    <input type="radio" name="radio1" class="radio2"> <input type="input2" class="input2"/><br>
+
+    <span class="tip"></span>
+</body>
+</html>
+
+<script src="jquery.js"></script>
+<script src="../src/Stars.js"></script>
+<script>
+
+with (Stars){
+    xx = and(
+        or(
+            control('.radio1').add(required('必选')),
+            control('.radio2').add(required('必选'))
+        ),
+        and(
+            or(
+                control('.radio1').add(not(required())),
+                and(
+                    control('.radio1').add(required()),
+                    control('.input1').add(required())
+                )
+            ),
+            or(
+                control('.radio2').add(not(required())),
+                and(
+                    control('.radio2').add(required()),
+                    control('.input2').add(required())
+                )
+            )
+        )
+    ).setTipEle('.tip')
+}
+</script>
+
