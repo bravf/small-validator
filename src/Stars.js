@@ -69,13 +69,13 @@ Stars = function (){
             this.callback = callback
             this.msg = msg || ''
             this.status = true
-        }
-        ,check : function (control){
+        },
+        check : function (control){
             var me = this
 
-            //如果是io回调触发的重新check直接返回status
-            if (control.io){
-                control.io = false
+            //如果是回流触发的重新check直接返回status
+            if (me.reflow){
+                me.reflow = false
                 return me.status
             }
 
@@ -83,7 +83,7 @@ Stars = function (){
 
             $.getJSON(url, function (data){
                 me.status = me.callback(control, data)
-                control.io = true
+                me.reflow = true
                 control.check()
             })
 
@@ -614,7 +614,7 @@ Stars = function (){
             }
 
             if (topParent){
-                if (topParent.errorControl){
+                if ( topParent.errorControl && (topParent.errorControl!=me) ){
                     topParent.errorControl.element.removeClass(error)
                 }
                 topParent.errorControl = me

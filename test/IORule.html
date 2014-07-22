@@ -9,7 +9,7 @@
         line-height: 24px;
         border: 1px solid #666;
     }
-    .error{
+    .control-error{
         border-color: red!important;
     }
     </style>
@@ -33,12 +33,13 @@ function numIOCheck(control, data){
 }
 
 with (Stars){
-    css.controlError = 'error'
+    //css.controlError = 'error'
 
     var numControl = control('#num').add(
+        required('不能为空'),
         rule(/^\d+$/, '必须是数字'),
         length([5, 6], '长度必须是5'),
-        rule('http://localhost/gitcafe/Stars/io.json?x=', numIOCheck, '编号已经存在')
+        rule('io.json?x=', numIOCheck, '编号已经存在')
     )
 
     or(
