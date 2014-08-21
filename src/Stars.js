@@ -591,7 +591,7 @@ Stars = function (){
 
     //全局额外交互设置
     var css = {
-        controlError : 'control-error'
+        controlError : 'stars-control-error'
     }
 
     TextControl.prototype.config = function (){
