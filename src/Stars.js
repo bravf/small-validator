@@ -79,7 +79,7 @@ Stars = function (){
                 return me.status
             }
 
-            var url = this.url + control.val() + '&t=' + (new Date).getTime()
+            var url = this.url + encodeURIComponent(control.val()) + '&t=' + (new Date).getTime()
 
             $.getJSON(url, function (data){
                 me.status = me.callback(control, data)
