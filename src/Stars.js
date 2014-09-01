@@ -136,7 +136,7 @@ Stars = function (){
             return true
         }
 
-        var msg
+        var msg = ''
 
         for (var i=0; i<this.rules.length; i++){
             var rule = this.rules[i]
@@ -385,7 +385,7 @@ Stars = function (){
                 return true
             }
 
-            var msg
+            var msg = ''
 
             for (var i=0; i<this.controls.length; i++){
                 var control = this.controls[i]
