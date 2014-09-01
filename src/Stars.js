@@ -136,15 +136,22 @@ Stars = function (){
             return true
         }
 
+        var msg
+
         for (var i=0; i<this.rules.length; i++){
             var rule = this.rules[i]
             var ret = rule.check(control)
+
+            if (rule.msg){
+                msg = rule.msg
+            }
+
             if (ret){
                 return true
             }
         }
 
-        this.msg = this.rules[this.rules.length-1].msg
+        this.msg = msg
         return false
     }
 
@@ -378,9 +385,15 @@ Stars = function (){
                 return true
             }
 
+            var msg
+
             for (var i=0; i<this.controls.length; i++){
                 var control = this.controls[i]
                 var ret = control.check(true)
+
+                if (control.msg){
+                    msg = control.msg
+                }
 
                 if (ret){
                     this.showTip(okMsg)
@@ -389,7 +402,7 @@ Stars = function (){
                 }
             }
 
-            this.showTip(this.controls[this.controls.length-1].msg)
+            this.showTip(msg)
             this.doCallback(false)
             return false
         }
