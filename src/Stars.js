@@ -206,8 +206,16 @@ Stars = function (){
             })
             return this
         },
+        onAlways : function (func){
+            var me = this
+            this.event.on('always', function (){
+                func(me)
+            })
+            return this
+        },
         doCallback : function (ret){
             this.event.trigger(ret ? 'success' : 'error')
+            this.event.trigger('always')
             return this
         },
         initNxEvent : function (){
