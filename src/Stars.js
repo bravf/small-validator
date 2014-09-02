@@ -243,15 +243,29 @@ Stars = function (){
             this.rules = this.rules.concat(toArray(arguments))
             return this
         },
-        showTip : function (msg){
+        showTip : function (ret, msg){
             this.msg = msg
 
-            if (!this.tipElement){
-                return
+            if (ret){
+                return this.clearTip()
             }
 
-            this.tipElement.html(msg)
-            this.tipElement[msg.length ? 'show' : 'hide']()
+            if (this.tipElement){
+                this.tipElement.html(msg).show()
+            }
+
+            return this
+        },
+        clearTip : function (){
+            if (this.tipElement){
+                this.tipElement.html('').hide()
+            }
+
+            if (this.controls){
+                $(this.controls).each(function (){
+                    this.clearTip()
+                })
+            }
 
             return this
         },
@@ -283,7 +297,7 @@ Stars = function (){
 
             var ret = andRule.check(this)
 
-            this.showTip(ret ? okMsg : andRule.msg)
+            this.showTip(ret, andRule.msg)
             this.doCallback(ret)
             return ret
         },
@@ -371,13 +385,13 @@ Stars = function (){
                 var ret = control.check(true)
 
                 if (!ret){
-                    this.showTip(control.msg)
+                    this.showTip(false, control.msg)
                     this.doCallback(false)
                     return false
                 }
             }
 
-            this.showTip(okMsg)
+            this.showTip(true, okMsg)
             this.doCallback(true)
             return true
         }
@@ -404,13 +418,13 @@ Stars = function (){
                 }
 
                 if (ret){
-                    this.showTip(okMsg)
+                    this.showTip(true, okMsg)
                     this.doCallback(true)
                     return true
                 }
             }
 
-            this.showTip(msg)
+            this.showTip(false, msg)
             this.doCallback(false)
             return false
         }
