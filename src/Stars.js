@@ -270,7 +270,7 @@ Stars = function (){
             return this
         },
         val : function (){
-            return this.element.val()
+            return this.element.val() || this.element.attr('data-stars-value') || ''
         },
         check : function (checkSelf){
             if (this.isDestoried()){
@@ -570,13 +570,13 @@ Stars = function (){
                 return element.prop('checked')
             }
             else if (eleType == 'select-one'){
-                return element.val() != '-1'
+                return control.val() != '-1'
             }
             else if (eleType == 'file'){
                 return element[0].files.length != 0
             }
             else {
-                return $.trim(element.val()) != ''
+                return $.trim(control.val()) != ''
             }
         }
         return new FuncRule(func, msg)
