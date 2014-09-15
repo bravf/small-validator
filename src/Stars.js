@@ -1,85 +1,72 @@
-/*
- * bravfing@126.com
- * 2014.3.1
- */
-
 Stars = function (){
-    var okMsg = ''
-
-    //记录所有对象
-    var objCache = {
-        id : 0,
-        table : [],
-        push : function (obj){
-            obj.id = this.id++
-            this.table[this.id] = obj
-        },
-        get : function (id){
-            return this.table[id]
-        }
+    var css = {
+        inputError : 'stars-input-error'
     }
 
-    //辅助方法
     function myclass(){
         return function (){
-            objCache.push(this)
             this.init.apply(this, arguments)
         }
     }
-    function toArray(arrLike){
-        return [].slice.call(arrLike)
-    }
-    function getElement(ele){
-        return $(ele)
+
+    function concatArr(arr1, arr2){
+        arr2 = Array.prototype.slice.call(arr2)
+        arr2.unshift(arr1.length, 0)
+        Array.prototype.splice.apply(arr1, arr2)
     }
 
-    //rules声明
-    var RegRule = myclass()
-    var FuncRule = myclass()
-    var IORule = myclass()
-    var AndRule = myclass()
-    var OrRule = myclass()
-    var NotRule = myclass()
-
-    //rules实现
-    RegRule.prototype = {
-        type : 'RegRule',
-        init : function (regexp, msg){
-            this.regexp = regexp
-            this.msg = msg || ''
-        },
-        check : function (control){
-            return this.regexp.test(control.val())
+    function eventCreater(name){
+        return function (func){
+            var me = this
+            me.$event.on(name, function (){
+                func(me)
+            })
+            return me
         }
     }
+
+    var RegRule = myclass()
+    RegRule.prototype = {
+        type : 'RegRule',
+        init : function (reg, msg){
+            this.reg = reg
+            this.msg = msg
+        },
+        check : function (control){
+            return this.reg.test(control.val())
+        }
+    }
+
+    var FuncRule = myclass()
     FuncRule.prototype = {
         type : 'FuncRule',
         init : function (func, msg){
             this.func = func
-            this.msg = msg || ''
+            this.msg = msg
         },
         check : function (control){
             return this.func(control)
         }
     }
+
+    var IORule = myclass()
     IORule.prototype = {
         type : 'IORule',
         init : function (url, callback, msg){
             this.url = url
             this.callback = callback
-            this.msg = msg || ''
+            this.msg = msg
             this.status = true
         },
         check : function (control){
             var me = this
 
-            //如果是回流触发的重新check直接返回status
             if (me.reflow){
                 me.reflow = false
                 return me.status
             }
 
-            var url = this.url + encodeURIComponent(control.val()) + '&t=' + (new Date).getTime()
+            var url = me.url + encodeURIComponent(control.val()) + '&t=' + (new Date).getTime()
 
             $.getJSON(url, function (data){
                 me.status = me.callback(control, data)
@@ -90,389 +77,275 @@ Stars = function (){
             return me.status
         }
     }
+
+    var NotRule = myclass()
     NotRule.prototype = {
         type : 'NotRule',
         init : function (rule, msg){
             this.rule = rule
-            this.msg = msg || ''
+            this.msg = msg
         },
         check : function (control){
             return !this.rule.check(control)
         }
     }
+
+    var AndRule = myclass()
     AndRule.prototype = {
         type : 'AndRule',
         init : function (){
-            var args = toArray(arguments)
             this.msg = ''
             this.rules = []
-            this.rules = this.rules.concat(args)
+            concatArr(this.rules, arguments)
         },
         add : function (){
-            this.rules = this.rules.concat(toArray(arguments))
+            concatArr(this.rules, arguments)
             return this
         },
         check : function (control){
-            if (!this.rules.length) {
-                return true
-            }
-
-            for (var i=0; i<this.rules.length; i++){
-                var rule = this.rules[i]
-                var ret = rule.check(control)
-                if (!ret){
+            for (var i= 0, rule; i<this.rules.length; i++){
+                rule = this.rules[i]
+                if (!rule.check(control)){
                     this.msg = rule.msg
                     return false
                 }
             }
-
             return true
         }
     }
+
+    var OrRule = myclass()
     OrRule.prototype = $.extend({}, AndRule.prototype)
-    OrRule.prototype.type ='OrRule'
+    OrRule.prototype.type = 'OrRule'
     OrRule.prototype.check = function (control){
-        if (!this.rules.length) {
-            return true
-        }
-
-        var msg = ''
-
-        for (var i=0; i<this.rules.length; i++){
-            var rule = this.rules[i]
-            var ret = rule.check(control)
-
+        for (var i= 0, rule; i<this.rules.length; i++){
+            rule = this.rules[i]
             if (rule.msg){
-                msg = rule.msg
+                this.msg = rule.msg
             }
-
-            if (ret){
+            if (rule.check(control)){
                 return true
             }
         }
-
-        this.msg = msg
         return false
     }
 
-    //controls声明
-    var FormControl = myclass()
     var TextControl = myclass()
-    var RadioControl = myclass()
-    var SelectControl = myclass()
-    var CheckboxControl = myclass()
-    var AndControl = myclass()
-    var OrControl = myclass()
-
-    //controls实现
-    //input[text],textarea control实现
     TextControl.prototype = {
         type : 'TextControl',
-        config : Function.prototype,
-        init : function (ele, tipEle){
-            this.element = getElement(ele)
-            this.event = $('<div/>')
+        triggerType : 'blur',
+        init : function ($ele){
+            this.$ele = $($ele)
+            this.$tipEle = $('<div/>')
+            this.$event = $('<div/>')
             this.rules = []
             this.msg = ''
             this.parent = null
+
+            this.initStarsEvent()
             this.bindEvents()
-
-            if (tipEle){
-                this.setTipEle(tipEle)
-            }
-
-            this.initNxEvent()
-            this.config()
         },
-        //注销掉
+        setTipEle : function ($tipEle){
+            this.$tipEle = $($tipEle)
+            return this
+        },
+        add : function (){
+            concatArr(this.rules, arguments)
+            return this
+        },
+        val : function (){
+            return this.$ele.val() || this.$ele.attr('data-stars-value') || ''
+        },
         destory : function (){
             this.hasDestory = true
         },
         isDestoried : function (){
-            return this.hasDestory ? true : false
+            return !!this.hasDestory
         },
-        //设置回调
-        onError : function (func){
-            var me = this
-            this.event.on('error', function (){
-                func(me)
-            })
-            return this
-        },
-        onSuccess : function (func){
-            var me = this
-            this.event.on('success', function (){
-                func(me)
-            })
-            return this
-        },
-        onAlways : function (func){
-            var me = this
-            this.event.on('always', function (){
-                func(me)
-            })
-            return this
-        },
-        doCallback : function (ret){
-            this.event.trigger(ret ? 'success' : 'error')
-            this.event.trigger('always')
-            return this
-        },
-        initNxEvent : function (){
-            var element = this.element
-            if (element.attr('data-nxevent') == 'yes') {
-                return
+        initStarsEvent : function (){
+            var $ele = this.$ele
+            var flag = 'data-stars-event'
+
+            if ($ele.attr(flag) == 'yes') {
+                return false
             }
 
-            element.attr('data-nxevent', 'yes')
+            $ele.attr(flag, 'yes')
             var events = ['blur', 'change']
 
             for (var i=0; i<events.length; i++){
                 void function (evt){
-                    element.on(evt, function (){
-                        element.trigger('nx'+evt)
+                    $ele.on(evt, function (){
+                        $ele.trigger('stars-'+evt)
                     })
                 }(events[i])
             }
         },
-        setTipEle : function (tipEle){
-            this.tipElement = getElement(tipEle)
-            return this
-        },
-        add : function (){
-            this.rules = this.rules.concat(toArray(arguments))
-            return this
-        },
-        showTip : function (ret, msg){
+        showTip : function (msg){
             this.msg = msg
-
-            if (ret){
-                return this.clearTip()
-            }
-
-            if (this.tipElement){
-                this.tipElement.html(msg).show()
-            }
-
+            this.$tipEle.html(msg)[msg?'show':'hide']()
             return this
         },
-        clearTip : function (){
-            if (this.tipElement){
-                this.tipElement.html('').hide()
+        clearStatus : function (){
+            this.showTip('')
+
+            if (this.type == 'TextControl') {
+                this.$ele.removeClass(css.inputError)
             }
 
             if (this.controls){
                 $(this.controls).each(function (){
-                    this.clearTip()
+                    this.clearStatus()
                 })
             }
-
-            return this
         },
-        val : function (){
-            return this.element.val() || this.element.attr('data-stars-value') || ''
-        },
-        check : function (checkSelf){
+        check : function (isSelf){
             if (this.isDestoried()){
                 return true
             }
-            //如果没有parent，则验证本身
             if (!this.parent){
-                return this.checkIt()
+                this.clearStatus()
+                return this.checkSelf()
             }
             else {
-                //如果明确说明验证本身
-                if (checkSelf){
-                    return this.checkIt()
+                if (isSelf){
+                    return this.checkSelf()
                 }
-                //否则向上冒泡
                 else {
                     return this.parent.check()
                 }
             }
         },
-        checkIt : function (){
+        checkSelf : function (){
             var andRule = new AndRule()
             andRule.add.apply(andRule, this.rules)
 
             var ret = andRule.check(this)
+            this.execCallback(ret)
+            this.showTip(andRule.msg)
 
-            this.showTip(ret, andRule.msg)
-            this.doCallback(ret)
             return ret
         },
+        execCallback : function (ret){
+            this.$event.trigger('always').trigger(ret?'success':'error')
+        },
         bindEvents : function (){
             var me = this
-            this.element.off('nxblur').on('nxblur', function (){
+            var eventType = 'stars-' + me.triggerType
+            me.$ele.off(eventType).on(eventType, function (){
                 me.check()
             })
 
-            return this
+            if (me.type == 'TextControl'){
+                me.onError(function (){
+                    me.$ele.addClass(css.inputError)
+                })
+            }
+            return me
         }
     }
+    $.extend(TextControl.prototype, {
+        onSuccess : eventCreater('success'),
+        onError : eventCreater('error'),
+        onAlways : eventCreater('always')
+    })
 
-    //select control实现
-    var SelectControlPrototype = {
-        type : 'SelectControl',
-        bindEvents : function (){
-            var me = this
-            this.element.off('nxchange').on('nxchange', function (){
-                me.check()
-            })
-            return this
-        }
-    }
+    var SelectControl = myclass()
     SelectControl.prototype = $.extend({}, TextControl.prototype)
-    SelectControl.prototype = $.extend(SelectControl.prototype, SelectControlPrototype)
+    SelectControl.prototype.type = 'SelectControl'
+    SelectControl.prototype.triggerType = 'change'
 
-    //radio control实现
-    var RadioControlPrototype = {
-        type : 'RadioControl',
-        bindEvents : function (){
-            var me = this
-            this.element.off('nxchange').on('nxchange', function (){
-                me.check()
-            })
-            return this
-        }
+    var RadioControl = myclass()
+    RadioControl.prototype = $.extend({}, SelectControl.prototype)
+    RadioControl.prototype.type = 'RadioControl'
+
+    var CheckboxControl = myclass()
+    CheckboxControl.prototype = $.extend({}, SelectControl.prototype)
+    CheckboxControl.prototype.type = 'CheckboxControl'
+
+    var AndControl = myclass()
+    AndControl.prototype = $.extend({}, TextControl.prototype)
+    AndControl.prototype.type = 'AndControl'
+    AndControl.prototype.init = function (){
+        this.$event = $('<div/>')
+        this.$tipEle = $('<div/>')
+        this.controls = []
+        this.parent = null
+        this.msg = ''
+
+        this.add.apply(this, arguments)
     }
-    RadioControl.prototype = $.extend({}, TextControl.prototype)
-    RadioControl.prototype = $.extend(RadioControl.prototype, RadioControlPrototype)
-
-    //checkbox control实现
-    var CheckboxControlPrototype = {
-        type : 'CheckboxControl',
-        bindEvents : function (){
-            var me = this
-            this.element.off('nxchange').on('nxchange', function (){
-                me.check()
-            })
-            return this
-        }
+    AndControl.prototype.add = function (){
+        var me = this
+        concatArr(me.controls, arguments)
+        $(me.controls).each(function (){
+            this.parent = me
+        })
+        return this
     }
-    CheckboxControl.prototype = $.extend({}, TextControl.prototype)
-    CheckboxControl.prototype = $.extend(CheckboxControl.prototype, CheckboxControlPrototype)
+    AndControl.prototype.checkSelf = function (){
+        var ret = true
+        var msg = ''
 
-    //control逻辑与实现(这个组表示依赖验证，比如a,b,c一组，那么a.check会触发组内所有人的check)
-    var AndControlPrototype = {
-        type : 'AndControl',
-        init : function (){
-            this.msg = ''
-            this.element = $('<div/>')
-            this.event = $('<div/>')
-            this.parent = null
-
-            this.controls = []
-            this.add.apply(this, arguments)
-            this.config()
-        },
-        add : function (){
-            var args = toArray(arguments)
-            for (var i=0; i<args.length; i++){
-                var control = args[i]
-                control.parent = this
-                this.controls.push(control)
+        for (var i=0, control; i<this.controls.length; i++){
+            control = this.controls[i]
+            if (!control.check(true)){
+                msg = control.msg
+                ret = false
+                break
             }
-            return this
-        },
-        checkIt : function (){
-            if (!this.controls.length) {
-                return true
-            }
-
-            for (var i=0; i<this.controls.length; i++){
-                var control = this.controls[i]
-                var ret = control.check(true)
-
-                if (!ret){
-                    this.showTip(false, control.msg)
-                    this.doCallback(false)
-                    return false
-                }
-            }
-
-            this.showTip(true, okMsg)
-            this.doCallback(true)
-            return true
         }
+
+        this.showTip(msg)
+        this.execCallback(ret)
+        return ret
     }
-     AndControl.prototype = $.extend({}, TextControl.prototype)
-     AndControl.prototype = $.extend(AndControl.prototype, AndControlPrototype)
 
-    //control逻辑或实现
-    var OrControlPrototype = {
-        type : 'OrControl',
-        checkIt : function (){
-            if (!this.controls.length){
-                return true
-            }
+    var OrControl = myclass()
+    OrControl.prototype = $.extend({}, AndControl.prototype)
+    OrControl.prototype.type = 'OrControl'
+    OrControl.prototype.checkSelf = function(){
+        var ret = false
+        var msg = ''
 
-            var msg = ''
-
-            for (var i=0; i<this.controls.length; i++){
-                var control = this.controls[i]
-                var ret = control.check(true)
-
-                if (control.msg){
+        for (var i=0, control; i<this.controls.length; i++){
+            control = this.controls[i]
+            if (!control.check(true)){
+                if (control.msg && !msg) {
                     msg = control.msg
                 }
-
-                if (ret){
-                    this.showTip(true, okMsg)
-                    this.doCallback(true)
-                    return true
-                }
             }
-
-            this.showTip(false, msg)
-            this.doCallback(false)
-            return false
+            else {
+                msg = ''
+                ret = true
+                break
+            }
         }
-    }
-    OrControl.prototype = $.extend({}, AndControl.prototype)
-    OrControl.prototype = $.extend(OrControl.prototype, OrControlPrototype)
 
-    //表示一个表单，实际上并非一定要是form，也可以表示一个表单group，它和AndControl的区别在于子control的check不会联动其他control
-    var FormControlPrototype = {
-        type : 'FormControl',
-        init : function (ele){
-            this.element = getElement(ele)
-            this.event = $('<div/>')
-            this.controls = []
-            this.bindEvents()
-            this.config()
-        },
-        add : function (){
-            this.controls = this.controls.concat(toArray(arguments))
-            return this
-        },
-        check : function (){
-            if (this.isDestoried()){
-                return true
-            }
-            var ok = true
-            for (var i=0; i<this.controls.length; i++){
-                var control = this.controls[i]
-                var ret = control.check()
-                if (!ret) {
-                    ok = false
-                }
-            }
-            this.doCallback(ok)
-            return ok
-        },
-        bindEvents : function (){
-            var me = this
-            this.element.bind('submit', function (){
-                return me.check()
-            })
-        }
+        this.showTip(msg)
+        this.execCallback(ret)
+        return ret
     }
-    FormControl.prototype = $.extend({}, TextControl.prototype)
-    FormControl.prototype = $.extend(FormControl.prototype, FormControlPrototype)
 
-    //快捷方式
-    //根据参数类型自动生成一个Rule对象
+    var FormControl = myclass()
+    FormControl.prototype = $.extend({}, AndControl.prototype)
+    FormControl.prototype.type = 'FormControl'
+    FormControl.prototype.add = function (){
+        concatArr(this.controls, arguments)
+        return this
+    }
+    FormControl.prototype.check = function (){
+        var me = this
+        var ret = true
+        $(me.controls).each(function (){
+            if (!this.check()){
+                ret = false
+            }
+        })
+        me.execCallback(ret)
+        return ret
+    }
+
     function rule(a, b, c){
         var t = $.type(a)
         if (t == 'regexp'){
@@ -487,20 +360,14 @@ Stars = function (){
         throw 'Rule error:' + a + ',' + b
     }
 
-    //快捷对一个Rule取非，并返回取非得对象
     function not(rule, msg){
         return new NotRule(rule, msg)
     }
 
-    //根据参数类型自动生成一个control
-    function control(ele){
-        var ele = getElement(ele)
+    function control($ele){
+        $ele = $($ele)
 
-        if ( (ele[0].tagName.toLowerCase()=='form') || (ele.attr('data-stars-type')=='form') ){
-            return new FormControl(ele)
-        }
-
-        var eleType = ele.prop("type")
+        var eleType = $ele.prop("type")
         var obj
 
         switch (eleType){
@@ -508,28 +375,27 @@ Stars = function (){
             case "hidden":
             case "textarea":
             case "password":
-                obj = new TextControl(ele)
+                obj = new TextControl($ele)
                 break
 
             case "radio":
-                obj = new RadioControl(ele)
+                obj = new RadioControl($ele)
                 break
 
             case "select-one":
             case "select-multiple":
             case "file":
-                obj = new SelectControl(ele)
+                obj = new SelectControl($ele)
                 break
 
             case "checkbox":
-                obj = new CheckboxControl(ele)
+                obj = new CheckboxControl($ele)
                 break
         }
 
         return obj
     }
 
-    //根据参数类型自动生成一个逻辑与或者逻辑或的组control
     var andOr = function (t){
         t = (t == "and") ? "and" : "or"
 
@@ -537,10 +403,9 @@ Stars = function (){
         var controlMap = {'and' : AndControl, 'or' : OrControl}
 
         var fn = function (){
-            var args = toArray(arguments)
+            var args = arguments
             var obj
 
-            // 如果没有参数, 默认为control
             if (!args.length) {
                 return new controlMap[t]
             }
@@ -551,7 +416,6 @@ Stars = function (){
             else {
                 obj = new ruleMap[t]
             }
-
             obj.add.apply(obj, args)
             return obj
         }
@@ -559,21 +423,19 @@ Stars = function (){
         return fn
     }
 
-    //常用规则
-    //返回一个表示(必填、必选)的rule对象
     function required(msg){
         function func(control){
-            var element = control.element
-            var eleType = element.prop("type")
+            var $ele = control.$ele
+            var eleType = $ele.prop("type")
 
             if (eleType == 'checkbox' || eleType == 'radio'){
-                return element.prop('checked')
+                return $ele.prop('checked')
             }
             else if (eleType == 'select-one'){
                 return control.val() != '-1'
             }
             else if (eleType == 'file'){
-                return element[0].files.length != 0
+                return $ele[0].files.length != 0
             }
             else {
                 return $.trim(control.val()) != ''
@@ -582,41 +444,35 @@ Stars = function (){
         return new FuncRule(func, msg)
     }
 
-    //返回一个表示(长度区间)的rule对象
     function length(range, msg){
         var min = parseInt(range[0])
         var max = parseInt(range[1])
 
-        //如果min,max都非法
         if (isNaN(min) && isNaN(max)){
             throw 'length error'
         }
 
         function func(control){
-            var element = control.element
-            var len = $.trim(element.val()).length
+            var $ele = control.$ele
+            var len = $.trim($ele.val()).length
 
-            //如果min,max都合法
             if (!isNaN(min) && !isNaN(max)){
                 return (len >= min) && (len < max)
             }
-            //如果min不合法
             if (isNaN(min)){
                 return len < max
             }
-            //如果max不合法
             return len >= min
         }
 
         return new FuncRule(func, msg)
     }
 
-    //针对radio、checkbox组，至少选一个，返回一个逻辑或的组control
-    function any(eleList, msg){
-        var elements =  getElement(eleList)
+    function any($eles, msg){
+        $eles =  $($eles)
         var orControlObj = new OrControl
 
-        elements.each(function (){
+        $eles.each(function (){
             var me = $(this)
             orControlObj.add(control(me).add(required(msg)))
         })
@@ -624,51 +480,7 @@ Stars = function (){
         return orControlObj
     }
 
-    //全局额外交互设置
-    var css = {
-        controlError : 'stars-control-error'
-    }
-
-    TextControl.prototype.config = function (){
-        var me = this
-        var element = me.element
-        var error = css.controlError
-
-        me.event.on('success', function (){
-            element.removeClass(error)
-        })
-        .on('error', function (){
-            element.addClass(error)
-
-            var parent = me.parent
-            var topParent
-
-            while (parent){
-                topParent = parent
-                parent = parent.parent
-            }
-
-            if (topParent){
-                if ( topParent.errorControl && (topParent.errorControl!=me) ){
-                    topParent.errorControl.element.removeClass(error)
-                }
-                topParent.errorControl = me
-            }
-        })
-    }
-
-    OrControl.prototype.config = AndControl.prototype.config = function (){
-        var me = this
-        me.event.on('success', function (){
-            if (me.errorControl){
-                me.errorControl.element.removeClass(css.controlError)
-                me.errorControl = null
-            }
-        })
-    }
-
     return {
-        getObj : objCache.get,
         css : css,
 
         RegRule : RegRule,
