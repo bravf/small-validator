@@ -274,6 +274,7 @@ Stars = function (){
         this.msg = ''
 
         this.add.apply(this, arguments)
+        this.bindEvents()
     }
     AndControl.prototype.add = function (){
         var me = this
@@ -299,6 +300,12 @@ Stars = function (){
         this.showTip(msg)
         this.execCallback(ret)
         return ret
+    }
+    AndControl.prototype.bindEvents = function (){
+        var me = this
+        me.onSuccess(function (){
+            me.clearStatus()
+        })
     }
 
     var OrControl = myclass()
