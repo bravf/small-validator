@@ -81,13 +81,8 @@ with (Stars){
             or(
                 //$other没选中
                 control($other).add(not(required())),
-                //下面两个情况要同时满足
-                and(
-                    //$other选中
-                    control($other).add(required(tips[1])),
-                    //$otherReasonTxt内容长度在1-400，length前闭后开
-                    control($otherReasonTxt).add(length([1, 401], tips[1]))
-                )
+                //$otherReasonTxt内容长度在1-400，length前闭后开
+                control($otherReasonTxt).add(length([1, 401], tips[1]))
             )
         //设置提示的位置
         ).setTipEle('.reason-notice')
@@ -126,26 +121,15 @@ with (Stars){
             //要么不是外星人(没选中)
             control($myCB).add(not(required())),
             and(
-                //要么是外星人(选中)
-                control($myCB).add(required()),
-                //下面两个情况要同时满足
-                and(
-                    //至少选一个
-                    any($reasonList, tips[2]),
-                    //下面规则至少满足一个
-                    or(
-                        //$other没选中
-                        control($other).add(not(required())),
-                        //下面两个情况要同时满足
-                        and(
-                            //$other选中
-                            control($other).add(required(tips[1])),
-                            //$otherReasonTxt内容长度在1-400，length前闭后开
-                            control($otherReasonTxt).add(length([1, 401], tips[1]))
-                        )
-                    )
+                //至少选一个
+                any($reasonList, tips[2]),
+                //下面规则至少满足一个
+                or(
+                    //$other没选中
+                    control($other).add(not(required())),
+                    //$otherReasonTxt内容长度在1-400，length前闭后开
+                    control($otherReasonTxt).add(length([1, 401], tips[1]))
                 )
-            )
         )
         //设置提示的位置
         .setTipEle('.reason-notice')
