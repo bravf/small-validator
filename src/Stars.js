@@ -241,6 +241,7 @@ Stars = function (){
                     me.$ele.addClass(css.inputError)
                 })
             }
+
             return me
         }
     }
@@ -439,7 +440,8 @@ Stars = function (){
                 return $ele.prop('checked')
             }
             else if (eleType == 'select-one'){
-                return control.val() != '-1'
+                var value = control.val()
+                return (value != '-1') && (value != '')
             }
             else if (eleType == 'file'){
                 return $ele[0].files.length != 0
