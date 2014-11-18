@@ -9,7 +9,7 @@
         line-height: 24px;
         border: 1px solid #666;
     }
-    .control-error{
+    .stars-input-error{
         border-color: red!important;
     }
     .error{
@@ -63,16 +63,14 @@ with (Stars){
      myControl = or(
         control('#checkbox1').add(not(required())),
          and(
-            control('#checkbox1').add(required()),
             or(
                 control('#radio1').add(required('至少选一个')),
-                control('#radio2').add(required('至少选一个'))
+                control('#radio2').add(required())
             ),
             and(
                 or(
                     control('#radio1').add(not(required())),
                     and(
-                        control('#radio1').add(required()),
                         control('#input1').add(required(requiredTip), rule(numReg, numTip), rule(isHour, hourTip)),
                         control('#input2').add(required(requiredTip), rule(numReg, numTip)),
                         control('#input3').add(required(requiredTip), rule(numReg, numTip), rule(isHour, hourTip)),
@@ -82,7 +80,6 @@ with (Stars){
                 or(
                     control('#radio2').add(not(required())),
                     and(
-                        control('#radio2').add(required()),
                         control('#input5').add(required(requiredTip), rule(numReg, numTip), rule(isHour, hourTip)),
                         control('#input6').add(required(requiredTip), rule(numReg, numTip)),
                         control('#input7').add(required(requiredTip), rule(numReg, numTip), rule(isHour, hourTip)),
