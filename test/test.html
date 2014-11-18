@@ -29,22 +29,16 @@
 
 <script>
 with (Stars){
-    xx = and(
-            any('input[name=radio1]', '至少选择一项'),
-            or(
-                    control('.js-radio-1').add(not(required())),
-                    and(
-                            control('.js-radio-1').add(required()),
-                            control('.js-select').add(required('select要选择'))
-                    )
-            ),
-            or(
-                    control('.js-radio-2').add(not(required())),
-                    and(
-                            control('.js-radio-2').add(required()),
-                            control('.js-text').add(required('text要填写'))
-                    )
-            )
+    and(
+        any('input[name=radio1]', '至少选择一项'),
+        or(
+            control('.js-radio-1').add(not(required())),
+            control('.js-select').add(required('select要选择'))
+        ),
+        or(
+            control('.js-radio-2').add(not(required())),
+            control('.js-text').add(required('text要填写'))
+        )
     ).setTipEle('.js-tip')
 }
 </script>
