@@ -120,11 +120,11 @@ Stars = function (){
     OrRule.prototype.check = function (control){
         for (var i= 0, rule; i<this.rules.length; i++){
             rule = this.rules[i]
-            if (rule.msg){
-                this.msg = rule.msg
-            }
             if (rule.check(control)){
                 return true
+            }
+            if (rule.msg){
+                this.msg = rule.msg
             }
         }
         return false
