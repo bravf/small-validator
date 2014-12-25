@@ -1,7 +1,7 @@
 /*
- * bravfing@126.com
- * 2014.6.11
- */
+    Copyright (c) 2014 bravf(bravfing@126.com)
+*/
+
 StarsTool = function (){
     var rulesTable = {
         phone : /^1[0-9]{10}$/,

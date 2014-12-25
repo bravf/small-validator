@@ -1,3 +1,7 @@
+/*
+    Copyright (c) 2014 bravf(bravfing@126.com)
+*/
+
 Stars = function (){
     var css = {
         inputError : 'stars-input-error'
