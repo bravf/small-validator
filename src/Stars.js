@@ -14,9 +14,7 @@ Stars = function (){
     }
 
     function concatArr(arr1, arr2){
-        arr2 = Array.prototype.slice.call(arr2)
-        arr2.unshift(arr1.length, 0)
-        Array.prototype.splice.apply(arr1, arr2)
+        Array.prototype.push.apply(arr1, arr2)
     }
 
     function eventCreater(name){
