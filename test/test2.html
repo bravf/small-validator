@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Stars test</title>
+    <style>
+        .stars-input-error{
+            border-color: red!important;
+        }
+    </style>
+</head>
+<body>
+
+<input type="radio" name="radio1" class="js-radio-1"/>
+<select class="js-select">
+    <option value="-1">just select</option>
+    <option value="1">one</option>
+    <option value="2">two</option>
+</select>
+<input type="radio" name="radio1" class="js-radio-2"/>
+<input type="text" class="js-text"/>
+<span class="js-tip"></span>
+
+<br>
+<button class="js-btn">test</button>
+
+</body>
+</html>
+
+<script src="jquery.js"></script>
+<script src="../src/Stars2.js"></script>
+
+<script>
+with (Stars){
+    x = and(
+        any('input[name=radio1]', '至少选择一项'),
+        or(
+            control('.js-radio-1').add(not(required())),
+            control('.js-select').add(required('select要选择'))
+        ),
+        or(
+            control('.js-radio-2').add(not(required())),
+            control('.js-text').add(required('text要填写'))
+        )
+    ).setTipEle('.js-tip')
+
+
+    $('.js-btn').on('click', function (){
+        x.check().done(function (){
+            alert(true)
+        })
+        .fail(function (){
+            alert(false)
+        })
+    })
+}
+
+
+</script>

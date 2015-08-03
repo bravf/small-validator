@@ -45,7 +45,7 @@
 </html>
 
 <script src="jquery.js"></script>
-<script src="../src/Stars.js"></script>
+<script src="../src/Stars2.js"></script>
 <script>
 var numReg = /^\d+$/
 var isHour = function (control){
@@ -92,7 +92,12 @@ with (Stars){
 }
 
 $('.btn').on('click', function (){
-    alert(myControl.check())
+    myControl.check().done(function(){
+        alert(true)
+    })
+    .fail(function(){
+        alert(false)
+    })
 })
 </script>
 
