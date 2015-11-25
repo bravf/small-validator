@@ -1,10 +1,92 @@
-/*
-    Copyright (c) 2014 bravf(bravfing@126.com)
-*/
+//! small-validator.js
+//! author : Dongdong.Zhang
+//! license : MIT
 
-Stars = function (){
+void function (global, factory){
+    if(typeof module !== 'undefined'){
+        module.exports = factory()
+    }
+    else if (typeof define === 'function' && define.amd){
+        define(factory)
+    }
+    else {
+        global.SmallValidator = factory()
+    }
+}(window, function (){
     var css = {
         inputError : 'stars-input-error'
+    }
+
+    function serialAnd(objs, control){
+        objs = objs.slice()
+
+        var retDefer = $.Deferred()
+
+        function getNext(){
+            var obj = objs.shift()
+
+            if (obj === undefined){
+                retDefer.resolve()
+                return
+            }
+
+            obj.check(control).done(function (){
+                getNext()
+            })
+            .fail(function (){
+                retDefer.reject(obj)
+            })
+        }
+        getNext()
+
+        return retDefer
+    }
+
+    function serialOr(objs, control){
+        objs = objs.slice()
+
+        var retDefer = $.Deferred()
+        var isOk = false
+        var msgObj
+
+        function getNext(){
+            if (isOk){
+                retDefer.resolve()
+                return
+            }
+
+            var obj = objs.shift()
+
+            if (obj === undefined){
+                retDefer.reject(msgObj)
+                return
+            }
+
+            obj.check(control).done(function (){
+                isOk = true
+            })
+            .fail(function (){
+                if (obj.msg){
+                    msgObj = obj
+                }
+            })
+            .always(function (){
+                getNext()
+            })
+        }
+        getNext()
+
+        return retDefer
+    }
+
+    function parallelAnd(objs){
+        var defers = []
+
+        for (var i=0,len=objs.length; i<len; i++){
+            defers.push(objs[i].check())
+        }
+
+        return $.when.apply(null, defers)
     }
 
     function myclass(){
@@ -35,7 +117,15 @@ Stars = function (){
             this.msg = msg
         },
         check : function (control){
-            return this.reg.test(control.val())
+            var defer = $.Deferred()
+
+            if (this.reg.test(control.val())){
+                defer.resolve()
+            }
+            else {
+                defer.reject()
+            }
+            return defer
         }
     }
 
@@ -47,36 +137,44 @@ Stars = function (){
             this.msg = msg
         },
         check : function (control){
-            return this.func(control)
+            var defer = $.Deferred()
+
+            if (this.func(control)){
+                defer.resolve()
+            }
+            else {
+                defer.reject()
+            }
+            return defer
         }
     }
 
     var IORule = myclass()
     IORule.prototype = {
         type : 'IORule',
-        init : function (url, callback, msg){
+        init : function (url, callback, msg, getParamsFunc){
             this.url = url
             this.callback = callback
             this.msg = msg
-            this.status = true
+            this.getParamsFunc = getParamsFunc || Function.prototype
         },
         check : function (control){
             var me = this
-
-            if (me.reflow){
-                me.reflow = false
-                return me.status
-            }
+            var defer = $.Deferred()
+            var params = this.getParamsFunc() || {}
 
             var url = me.url + encodeURIComponent(control.val()) + '&t=' + (new Date).getTime()
 
-            $.getJSON(url, function (data){
-                me.status = me.callback(control, data)
-                me.reflow = true
-                control.check()
+            $.getJSON(url, params, function (data){
+                if (me.callback(control, data)){
+                    defer.resolve()
+                }
+                else {
+                    defer.reject()
+                }
             })
 
-            return me.status
+            return defer
         }
     }
 
@@ -88,7 +186,16 @@ Stars = function (){
             this.msg = msg
         },
         check : function (control){
-            return !this.rule.check(control)
+            var defer = $.Deferred()
+
+            this.rule.check(control).done(function (){
+                defer.reject()
+            })
+            .fail(function (){
+                defer.resolve()
+            })
+
+            return defer
         }
     }
 
@@ -105,14 +212,10 @@ Stars = function (){
             return this
         },
         check : function (control){
-            for (var i= 0, rule; i<this.rules.length; i++){
-                rule = this.rules[i]
-                if (!rule.check(control)){
-                    this.msg = rule.msg
-                    return false
-                }
-            }
-            return true
+            var me = this
+            return serialAnd(this.rules, control).fail(function (rule){
+                me.msg = rule.msg
+            })
         }
     }
 
@@ -120,16 +223,12 @@ Stars = function (){
     OrRule.prototype = $.extend({}, AndRule.prototype)
     OrRule.prototype.type = 'OrRule'
     OrRule.prototype.check = function (control){
-        for (var i= 0, rule; i<this.rules.length; i++){
-            rule = this.rules[i]
-            if (rule.check(control)){
-                return true
+        var me = this
+        return serialOr(this.rules, control).fail(function (rule){
+            if (rule){
+                me.msg = rule.msg
             }
-            if (rule.msg){
-                this.msg = rule.msg
-            }
-        }
-        return false
+        })
     }
 
     var TextControl = myclass()
@@ -156,13 +255,18 @@ Stars = function (){
             return this
         },
         val : function (){
-            return this.$ele.val() || this.$ele.attr('data-stars-value') || ''
+            if (this.type == 'TextControl' && this.$ele.hasClass('js-placeholder')){
+                return ''
+            }
+            return $.trim(this.$ele.val()) || this.$ele.attr('data-stars-value') || ''
         },
-        destory : function (){
-            this.hasDestory = true
+        on: function (){
+            this.display = true
+            return this
         },
-        isDestoried : function (){
-            return !!this.hasDestory
+        off : function (){
+            this.display = false
+            return this
         },
         initStarsEvent : function (){
             var $ele = this.$ele
@@ -185,7 +289,10 @@ Stars = function (){
         },
         showTip : function (msg){
             this.msg = msg
-            this.$tipEle.html(msg)[msg?'show':'hide']()
+            this.$tipEle.html(msg).hide()
+            if (msg){
+                this.$tipEle.fadeIn()
+            }
             return this
         },
         clearStatus : function (){
@@ -202,9 +309,16 @@ Stars = function (){
             }
         },
         check : function (isSelf){
-            if (this.isDestoried()){
-                return true
+            var me = this
+
+            //如果被主动off
+            //或者，元素被隐藏或删除
+            if (this.display === false || (this.$ele && this.$ele.is(':hidden')) ){
+                var defer = $.Deferred()
+                defer.resolve()
+                return defer
             }
+
             if (!this.parent){
                 this.clearStatus()
                 return this.checkSelf()
@@ -219,14 +333,20 @@ Stars = function (){
             }
         },
         checkSelf : function (){
+            var me = this
+
             var andRule = new AndRule()
             andRule.add.apply(andRule, this.rules)
 
-            var ret = andRule.check(this)
-            this.execCallback(ret)
-            this.showTip(andRule.msg)
-
-            return ret
+            return andRule.check(this).done(function (){
+                me.execCallback(true)
+            })
+            .fail(function (){
+                me.execCallback(false)
+            })
+            .always(function (){
+                me.showTip(andRule.msg)
+            })
         },
         execCallback : function (ret){
             this.$event.trigger('always').trigger(ret?'success':'error')
@@ -288,21 +408,18 @@ Stars = function (){
         return this
     }
     AndControl.prototype.checkSelf = function (){
-        var ret = true
-        var msg = ''
+        var me = this
 
-        for (var i=0, control; i<this.controls.length; i++){
-            control = this.controls[i]
-            if (!control.check(true)){
-                msg = control.msg
-                ret = false
-                break
+        return serialAnd(this.controls, true).done(function (){
+            me.showTip('')
+            me.execCallback(true)
+        })
+        .fail(function (control){
+            if (control){
+                me.showTip(control.msg)
             }
-        }
-
-        this.showTip(msg)
-        this.execCallback(ret)
-        return ret
+            me.execCallback(false)
+        })
     }
     AndControl.prototype.bindEvents = function (){
         var me = this
@@ -315,26 +432,21 @@ Stars = function (){
     OrControl.prototype = $.extend({}, AndControl.prototype)
     OrControl.prototype.type = 'OrControl'
     OrControl.prototype.checkSelf = function(){
+        var me = this
+
+        return serialOr(this.controls, true).done(function (){
+            me.showTip('')
+            me.execCallback(true)
+        })
+        .fail(function (control){
+            if (control){
+                me.showTip(control.msg)
+            }
+            me.execCallback(false)
+        })
+
         var ret = false
         var msg = ''
-
-        for (var i=0, control; i<this.controls.length; i++){
-            control = this.controls[i]
-            if (!control.check(true)){
-                if (control.msg && !msg) {
-                    msg = control.msg
-                }
-            }
-            else {
-                msg = ''
-                ret = true
-                break
-            }
-        }
-
-        this.showTip(msg)
-        this.execCallback(ret)
-        return ret
     }
 
     var FormControl = myclass()
@@ -346,17 +458,16 @@ Stars = function (){
     }
     FormControl.prototype.check = function (){
         var me = this
-        var ret = true
-        $(me.controls).each(function (){
-            if (!this.check()){
-                ret = false
-            }
+
+        return parallelAnd(this.controls).done(function (){
+            me.execCallback(true)
         })
-        me.execCallback(ret)
-        return ret
+        .fail(function (){
+            me.execCallback(false)
+        })
     }
 
-    function rule(a, b, c){
+    function rule(a, b, c, d){
         var t = $.type(a)
         if (t == 'regexp'){
             return new RegRule(a, b)
@@ -365,7 +476,7 @@ Stars = function (){
             return new FuncRule(a, b)
         }
         else if (t == 'string'){
-            return new IORule(a, b, c)
+            return new IORule(a, b, c, d)
         }
         throw 'Rule error:' + a + ',' + b
     }
@@ -375,31 +486,32 @@ Stars = function (){
     }
 
     function control($ele){
+        if (!$ele){
+            return new FormControl
+        }
+
         $ele = $($ele)
 
-        var eleType = $ele.prop("type")
+        var eleType = $ele.prop('type')
         var obj
 
         switch (eleType){
-            case "text":
-            case "hidden":
-            case "textarea":
-            case "password":
-                obj = new TextControl($ele)
-                break
-
-            case "radio":
+            case 'radio':
                 obj = new RadioControl($ele)
                 break
 
-            case "select-one":
-            case "select-multiple":
-            case "file":
+            case 'select-one':
+            case 'select-multiple':
+            case 'file':
                 obj = new SelectControl($ele)
                 break
 
-            case "checkbox":
+            case 'checkbox':
                 obj = new CheckboxControl($ele)
+                break
+
+            default:
+                obj = new TextControl($ele)
                 break
         }
 
@@ -407,7 +519,7 @@ Stars = function (){
     }
 
     var andOr = function (t){
-        t = (t == "and") ? "and" : "or"
+        t = (t == 'and') ? 'and' : 'or'
 
         var ruleMap = {'and' : AndRule, 'or' : OrRule}
         var controlMap = {'and' : AndControl, 'or' : OrControl}
@@ -436,7 +548,7 @@ Stars = function (){
     function required(msg){
         function func(control){
             var $ele = control.$ele
-            var eleType = $ele.prop("type")
+            var eleType = $ele.prop('type')
 
             if (eleType == 'checkbox' || eleType == 'radio'){
                 return $ele.prop('checked')
@@ -468,7 +580,7 @@ Stars = function (){
             var len = $.trim($ele.val()).length
 
             if (!isNaN(min) && !isNaN(max)){
-                return (len >= min) && (len < max)
+                return (len >= min) && (len <= max)
             }
             if (isNaN(min)){
                 return len < max
@@ -493,31 +605,29 @@ Stars = function (){
 
     return {
         css : css,
-
-        RegRule : RegRule,
-        FuncRule : FuncRule,
-        IORule : IORule,
-        NotRule : NotRule,
-        AndRule : AndRule,
-        OrRule : OrRule,
-
-        FormControl : FormControl,
-        TextControl : TextControl,
-        RadioControl : RadioControl,
-        SelectControl : SelectControl,
-        CheckboxControl : CheckboxControl,
-        AndControl : AndControl,
-        OrControl : OrControl,
-
         rule : rule,
         not : not,
         control : control,
         and : andOr('and'),
         or : andOr('or'),
-
         required : required,
         length : length,
+        any : any,
 
-        any : any
+        base : {
+            RegRule : RegRule,
+            FuncRule : FuncRule,
+            IORule : IORule,
+            NotRule : NotRule,
+            AndRule : AndRule,
+            OrRule : OrRule,
+            FormControl : FormControl,
+            TextControl : TextControl,
+            RadioControl : RadioControl,
+            SelectControl : SelectControl,
+            CheckboxControl : CheckboxControl,
+            AndControl : AndControl,
+            OrControl : OrControl
+        }
     }
-}()
+})
