@@ -64,7 +64,7 @@ $('.js-submit-btn').on('click', function (){
     })
 })
 ```
-###Actually, a more simple method:
+###Actually, a more simple style:
 ```
 var formControl
 with (SmallValidator){
