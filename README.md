@@ -1,4 +1,6 @@
-###import mode:
+#SmallValidator, you need it!
+
+###Import mode:
 
 ```
 //script link
@@ -12,7 +14,7 @@ define(['small-validator.js'], function (){
 })
 ```
 
-###sometimes, we have a user form like this:
+###Sometimes, we have a user form like this:
 ```
 <form class="js-test-form">
     <input type="text" class="js-user"/>
@@ -21,18 +23,14 @@ define(['small-validator.js'], function (){
 </form>
 ```
 
-###we can valid the form with ```small-validator```:
+###We can valid the form with ```small-validator```:
 
 ```
 var SmallValidator = require('small-validator.js')
-
-//create a form control
 var formControl = new SmallValidator.control()
 
-//create user control
+//############################################################
 var userControl = SmallValidator.control('.js-user')
-
-// add user rules
 var notEmptyRule = SmallValidator.required('username is required')
 var lengthRule = SmallValidator.rule(/^*{5,8}$/, 'username length should in 5..8')
 var userExistsRule  = SmallValidator.rule('userExists.php', function (control, data){
@@ -45,10 +43,8 @@ var userExistsRule  = SmallValidator.rule('userExists.php', function (control, d
 }, 'user already exist')
 userControl.add(notEmptyRule, lengthRule, userExistsRule)
 
-//create password control
+//############################################################
 var passControl = SmallValidator.control('.js-password')
-
-//add password rules
 var notEmptyRule = SmallValidator.required('password is required')
 var lengthRule = SmallValidator.rule(function (control){
     var value = control.val()
@@ -56,10 +52,9 @@ var lengthRule = SmallValidator.rule(function (control){
 }, 'password length should in 5..8 and all chars should be number')
 passControl.add(notEmptyRule, lengthRule)
 
-//add controls to form
+//############################################################
 formControl.add(userControl, passControl)
 
-//bind event
 $('.js-submit-btn').on('click', function (){
     formControl.check().done(function (){
         //when valid ok
@@ -69,7 +64,7 @@ $('.js-submit-btn').on('click', function (){
     })
 })
 ```
-###actually, a more simple method:
+###Actually, a more simple method:
 ```
 var formControl
 with (SmallValidator){
@@ -96,4 +91,4 @@ with (SmallValidator){
 }
 ```
 
-##read soure code and enjoy it!
+##Read soure code and enjoy it!
