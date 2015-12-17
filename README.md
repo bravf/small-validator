@@ -1,4 +1,5 @@
-import mode:
+###import mode:
+
 ```
 //script link
 <script src="small-validator.js"></script>
@@ -11,7 +12,7 @@ define(['small-validator.js'], function (){
 })
 ```
 
-sometimes, we have a user form like this:
+###sometimes, we have a user form like this:
 ```
 <form class="js-test-form">
     <input type="text" class="js-user"/>
@@ -20,7 +21,8 @@ sometimes, we have a user form like this:
 </form>
 ```
 
-we can valid the form with ```small-validator```:
+###we can valid the form with ```small-validator```:
+
 ```
 var SmallValidator = require('small-validator.js')
 
@@ -67,7 +69,7 @@ $('.js-submit-btn').on('click', function (){
     })
 })
 ```
-actually, a more simple method:
+###actually, a more simple method:
 ```
 var formControl
 with (SmallValidator){
@@ -94,4 +96,4 @@ with (SmallValidator){
 }
 ```
 
-read soure code and enjoy it!
+##read soure code and enjoy it!
