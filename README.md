@@ -70,8 +70,7 @@ var formControl
 
 with (SmallValidator){
     formControl = control().add(
-    
-        //user
+        //############################################################
         control('.js-user').add(
             required('user is required'),
             length([5, 8], 'username length should in 5..8'),
@@ -84,8 +83,7 @@ with (SmallValidator){
                 }
             }, 'user already exist')
         ),
-        
-        //password
+        //############################################################
         control('.js-password').add(
             required('password is required'),
             rule(/^\d{5,8}$/, 'password length should in 5..8 and all chars should be number')
