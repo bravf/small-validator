@@ -67,8 +67,10 @@ $('.js-submit-btn').on('click', function (){
 ###Actually, a more simple style:
 ```
 var formControl
+
 with (SmallValidator){
     formControl = control().add(
+    
         //user
         control('.js-user').add(
             required('user is required'),
@@ -82,6 +84,7 @@ with (SmallValidator){
                 }
             }, 'user already exist')
         ),
+        
         //password
         control('.js-password').add(
             required('password is required'),
