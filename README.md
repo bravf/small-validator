@@ -18,7 +18,11 @@ define(['small-validator.js'], function (){
 ```
 <form class="js-test-form">
     <input type="text" class="js-user"/>
+    <div class="js-user-tip"></div>
+    
     <input type="password" class="js-password">
+    <div class="js-password-tip"></div>
+    
     <button class="js-submit-btn">提交</button>
 </form>
 ```
@@ -30,7 +34,7 @@ var SmallValidator = require('small-validator.js')
 var formControl = new SmallValidator.control()
 
 //############################################################
-var userControl = SmallValidator.control('.js-user')
+var userControl = SmallValidator.control('.js-user').setTipEle('.js-user-tip')
 var notEmptyRule = SmallValidator.required('username is required')
 var lengthRule = SmallValidator.rule(/^*{5,8}$/, 'username length should in 5..8')
 var userExistsRule  = SmallValidator.rule('userExists.php', function (control, data){
@@ -44,7 +48,7 @@ var userExistsRule  = SmallValidator.rule('userExists.php', function (control, d
 userControl.add(notEmptyRule, lengthRule, userExistsRule)
 
 //############################################################
-var passControl = SmallValidator.control('.js-password')
+var passControl = SmallValidator.control('.js-password').setTipEle('.js-password-tip')
 var notEmptyRule = SmallValidator.required('password is required')
 var lengthRule = SmallValidator.rule(function (control){
     var value = control.val()
@@ -71,7 +75,9 @@ var formControl
 with (SmallValidator){
     formControl = control().add(
         
-        control('.js-user').add(
+        control('.js-user')
+        .setTipEle('.js-user-tip')
+        .add(
             required('user is required'),
             length([5, 8], 'username length should in 5..8'),
             rule('userExists.php', function (control, data){
@@ -84,7 +90,9 @@ with (SmallValidator){
             }, 'user already exist')
         ),
         
-        control('.js-password').add(
+        control('.js-password')
+        .setTipEle('.js-password-tip')
+        .add(
             required('password is required'),
             rule(/^\d{5,8}$/, 'password length should in 5..8 and all chars should be number')
         )
