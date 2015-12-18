@@ -2,7 +2,7 @@
 
 ###Import mode:
 
-```
+```javascript
 //script link
 <script src="small-validator.js"></script>
 
@@ -15,7 +15,7 @@ define(['small-validator.js'], function (){
 ```
 
 ###Sometimes, we have a user form like this:
-```
+```javascript
 <form class="js-test-form">
     <input type="text" class="js-user"/>
     <div class="js-user-tip"></div>
@@ -29,7 +29,7 @@ define(['small-validator.js'], function (){
 
 ###We can valid the form with ```small-validator```:
 
-```
+```javascript
 var SmallValidator = require('small-validator.js')
 var formControl = new SmallValidator.control()
 
@@ -69,7 +69,7 @@ $('.js-submit-btn').on('click', function (){
 })
 ```
 ###Actually, a more simple style:
-```
+```javascript
 var formControl
 
 with (SmallValidator){
