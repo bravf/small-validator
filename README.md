@@ -15,7 +15,7 @@ define(['small-validator.js'], function (){
 ```
 
 ###Sometimes, we have a user form like this:
-```javascript
+```html
 <form class="js-test-form">
     <input type="text" class="js-user"/>
     <div class="js-user-tip"></div>
@@ -31,12 +31,16 @@ define(['small-validator.js'], function (){
 
 ```javascript
 var SmallValidator = require('small-validator.js')
+
 var formControl = new SmallValidator.control()
 
 //############################################################
 var userControl = SmallValidator.control('.js-user').setTipEle('.js-user-tip')
+
 var notEmptyRule = SmallValidator.required('username is required')
+
 var lengthRule = SmallValidator.rule(/^*{5,8}$/, 'username length should in 5..8')
+
 var userExistsRule  = SmallValidator.rule('userExists.php', function (control, data){
     if (data.exist){
         return false
@@ -45,15 +49,19 @@ var userExistsRule  = SmallValidator.rule('userExists.php', function (control, d
         return true
     }
 }, 'user already exist')
+
 userControl.add(notEmptyRule, lengthRule, userExistsRule)
 
 //############################################################
 var passControl = SmallValidator.control('.js-password').setTipEle('.js-password-tip')
+
 var notEmptyRule = SmallValidator.required('password is required')
+
 var lengthRule = SmallValidator.rule(function (control){
     var value = control.val()
     return /^\d{5,8}$/.test(value)
 }, 'password length should in 5..8 and all chars should be number')
+
 passControl.add(notEmptyRule, lengthRule)
 
 //############################################################
