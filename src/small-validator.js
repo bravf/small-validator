@@ -444,9 +444,6 @@ void function (global, factory){
             }
             me.execCallback(false)
         })
-
-        var ret = false
-        var msg = ''
     }
 
     var FormControl = myclass()
