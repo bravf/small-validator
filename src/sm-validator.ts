@@ -13,12 +13,12 @@ function serialAnd(objs, control) {
             return
         }
 
-        obj.check(control).done(function() {
+        obj.check(control).done(() => {
             getNext()
         })
-            .fail(function() {
-                retDefer.reject(obj)
-            })
+        .fail(() => {
+            retDefer.reject(obj)
+        })
     }
     getNext()
 
@@ -44,17 +44,17 @@ function serialOr(objs, control) {
             return
         }
 
-        obj.check(control).done(function() {
+        obj.check(control).done(() => {
             isOk = true
         })
-            .fail(function() {
-                if (obj.msg) {
-                    msgObj = obj
-                }
-            })
-            .always(function() {
-                getNext()
-            })
+        .fail(() => {
+            if (obj.msg) {
+                msgObj = obj
+            }
+        })
+        .always(() => {
+            getNext()
+        })
     }
     getNext()
 
