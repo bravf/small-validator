@@ -116,7 +116,7 @@ export class IORule {
 
         var url = me.url + encodeURIComponent(control.val()) + '&t=' + (new Date).getTime()
 
-        $.getJSON(url, params, function(data) {
+        $.getJSON(url, params, data => {
             if (me.callback(control, data)) {
                 defer.resolve()
             }
@@ -124,10 +124,10 @@ export class IORule {
                 defer.reject()
             }
         })
-            .fail(function() {
-                me.msg = 'request timeout'
-                defer.reject()
-            })
+        .fail(() => {
+            me.msg = 'request timeout'
+            defer.reject()
+        })
 
         return defer
     }
@@ -138,12 +138,12 @@ export class NotRule {
     check(control) {
         var defer = $.Deferred()
 
-        this.rule.check(control).done(function() {
+        this.rule.check(control).done(() => {
             defer.reject()
         })
-            .fail(function() {
-                defer.resolve()
-            })
+        .fail(() => {
+            defer.resolve()
+        })
 
         return defer
     }
@@ -259,12 +259,7 @@ class Control {
 export class TextControl extends Control {
     $ele
     rules = []
-    $tipEle = $('<div/>')
-    $event = $('<div/>')
-    display = true
-    msg = ''
     triggerType = 'blur'
-    parent = null
 
     constructor($ele) {
         super()
@@ -324,25 +319,25 @@ export class TextControl extends Control {
         var andRule = new AndRule()
         andRule.add(...this.rules)
 
-        return andRule.check(this).done(function() {
+        return andRule.check(this).done(() => {
             me.execCallback(true)
         })
-            .fail(function() {
-                me.execCallback(false)
-            })
-            .always(function() {
-                me.showTip(andRule.msg)
-            })
+        .fail(() => {
+            me.execCallback(false)
+        })
+        .always(() => {
+            me.showTip(andRule.msg)
+        })
     }
     bindEvents() {
         var me = this
         var eventType = 'stars-' + me.triggerType
-        me.$ele.off(eventType).on(eventType, function() {
+        me.$ele.off(eventType).on(eventType, () => {
             me.check()
         })
 
         if (me instanceof TextControl) {
-            me.onError(function() {
+            me.onError(() => {
                 me.$ele.addClass(css.inputError)
             })
         }
@@ -580,7 +575,7 @@ export function any($eles, msg) {
     $eles = $($eles)
     var orControlObj = new OrControl
 
-    $eles.each(function() {
+    $eles.each(() => {
         var me = $(this)
         orControlObj.add(control(me).add(required(msg)))
     })

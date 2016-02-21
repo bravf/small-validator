@@ -267,12 +267,7 @@ var TextControl = (function (_super) {
     function TextControl($ele) {
         _super.call(this);
         this.rules = [];
-        this.$tipEle = $('<div/>');
-        this.$event = $('<div/>');
-        this.display = true;
-        this.msg = '';
         this.triggerType = 'blur';
-        this.parent = null;
         this.$ele = $($ele);
         this.initStarsEvent();
         this.bindEvents();
@@ -593,10 +588,11 @@ function length(range, msg) {
 }
 exports.length = length;
 function any($eles, msg) {
+    var _this = this;
     $eles = $($eles);
     var orControlObj = new OrControl;
     $eles.each(function () {
-        var me = $(this);
+        var me = $(_this);
         orControlObj.add(control(me).add(required(msg)));
     });
     return orControlObj;
