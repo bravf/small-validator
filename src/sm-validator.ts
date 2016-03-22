@@ -14,6 +14,7 @@ function serialAnd(objs, control) {
         }
 
         obj.check(control).done(() => {
+
             getNext()
         })
         .fail(() => {
@@ -447,7 +448,7 @@ export class FormControl extends AndControl {
     }
 }
 
-export function rule(a, b, c, d): any {
+export function rule(a, b, c?, d?): any {
     var t = $.type(a)
     if (t == 'regexp') {
         return new RegRule(a, b)
@@ -465,7 +466,7 @@ export function not(rule, msg) {
     return new NotRule(rule, msg)
 }
 
-export function control($ele): any {
+export function control($ele?): any {
     if (!$ele) {
         return new FormControl
     }

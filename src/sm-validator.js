@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -79,7 +80,7 @@ var RegRule = (function () {
         return defer;
     };
     return RegRule;
-})();
+}());
 exports.RegRule = RegRule;
 var FuncRule = (function () {
     function FuncRule(func, msg) {
@@ -97,7 +98,7 @@ var FuncRule = (function () {
         return defer;
     };
     return FuncRule;
-})();
+}());
 exports.FuncRule = FuncRule;
 var IORule = (function () {
     function IORule(url, callback, msg, getParamsFunc) {
@@ -127,7 +128,7 @@ var IORule = (function () {
         return defer;
     };
     return IORule;
-})();
+}());
 exports.IORule = IORule;
 var NotRule = (function () {
     function NotRule(rule, msg) {
@@ -145,7 +146,7 @@ var NotRule = (function () {
         return defer;
     };
     return NotRule;
-})();
+}());
 exports.NotRule = NotRule;
 var AndRule = (function () {
     function AndRule() {
@@ -171,7 +172,7 @@ var AndRule = (function () {
         });
     };
     return AndRule;
-})();
+}());
 exports.AndRule = AndRule;
 var OrRule = (function (_super) {
     __extends(OrRule, _super);
@@ -191,7 +192,7 @@ var OrRule = (function (_super) {
         });
     };
     return OrRule;
-})(AndRule);
+}(AndRule));
 exports.OrRule = OrRule;
 var Control = (function () {
     function Control() {
@@ -261,7 +262,7 @@ var Control = (function () {
     Control.prototype.clearStatus = function () { };
     Control.prototype.bindEvents = function () { };
     return Control;
-})();
+}());
 var TextControl = (function (_super) {
     __extends(TextControl, _super);
     function TextControl($ele) {
@@ -346,7 +347,7 @@ var TextControl = (function (_super) {
         return me;
     };
     return TextControl;
-})(Control);
+}(Control));
 exports.TextControl = TextControl;
 var SelectControl = (function (_super) {
     __extends(SelectControl, _super);
@@ -355,7 +356,7 @@ var SelectControl = (function (_super) {
         this.triggerType = 'change';
     }
     return SelectControl;
-})(TextControl);
+}(TextControl));
 exports.SelectControl = SelectControl;
 var RadioControl = (function (_super) {
     __extends(RadioControl, _super);
@@ -363,7 +364,7 @@ var RadioControl = (function (_super) {
         _super.call(this, $ele);
     }
     return RadioControl;
-})(SelectControl);
+}(SelectControl));
 exports.RadioControl = RadioControl;
 var CheckboxControl = (function (_super) {
     __extends(CheckboxControl, _super);
@@ -371,7 +372,7 @@ var CheckboxControl = (function (_super) {
         _super.call(this, $ele);
     }
     return CheckboxControl;
-})(SelectControl);
+}(SelectControl));
 exports.CheckboxControl = CheckboxControl;
 var AndControl = (function (_super) {
     __extends(AndControl, _super);
@@ -422,7 +423,7 @@ var AndControl = (function (_super) {
         });
     };
     return AndControl;
-})(Control);
+}(Control));
 exports.AndControl = AndControl;
 var OrControl = (function (_super) {
     __extends(OrControl, _super);
@@ -447,7 +448,7 @@ var OrControl = (function (_super) {
         });
     };
     return OrControl;
-})(AndControl);
+}(AndControl));
 exports.OrControl = OrControl;
 var FormControl = (function (_super) {
     __extends(FormControl, _super);
@@ -476,7 +477,7 @@ var FormControl = (function (_super) {
         });
     };
     return FormControl;
-})(AndControl);
+}(AndControl));
 exports.FormControl = FormControl;
 function rule(a, b, c, d) {
     var t = $.type(a);
