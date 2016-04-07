@@ -268,11 +268,13 @@ var TextControl = (function (_super) {
     function TextControl($ele) {
         _super.call(this);
         this.rules = [];
-        this.triggerType = 'blur';
         this.$ele = $($ele);
         this.initStarsEvent();
         this.bindEvents();
     }
+    TextControl.prototype.getTriggerType = function () {
+        return 'blur';
+    };
     TextControl.prototype.setTipEle = function ($tipEle) {
         this.$tipEle = $($tipEle);
         return this;
@@ -335,7 +337,7 @@ var TextControl = (function (_super) {
     };
     TextControl.prototype.bindEvents = function () {
         var me = this;
-        var eventType = 'stars-' + me.triggerType;
+        var eventType = 'stars-' + me.getTriggerType();
         me.$ele.off(eventType).on(eventType, function () {
             me.check();
         });
@@ -353,8 +355,10 @@ var SelectControl = (function (_super) {
     __extends(SelectControl, _super);
     function SelectControl($ele) {
         _super.call(this, $ele);
-        this.triggerType = 'change';
     }
+    SelectControl.prototype.getTriggerType = function () {
+        return 'change';
+    };
     return SelectControl;
 }(TextControl));
 exports.SelectControl = SelectControl;

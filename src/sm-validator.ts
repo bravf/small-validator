@@ -14,12 +14,11 @@ function serialAnd(objs, control) {
         }
 
         obj.check(control).done(() => {
-
             getNext()
         })
-        .fail(() => {
-            retDefer.reject(obj)
-        })
+            .fail(() => {
+                retDefer.reject(obj)
+            })
     }
     getNext()
 
@@ -48,14 +47,14 @@ function serialOr(objs, control) {
         obj.check(control).done(() => {
             isOk = true
         })
-        .fail(() => {
-            if (obj.msg) {
-                msgObj = obj
-            }
-        })
-        .always(() => {
-            getNext()
-        })
+            .fail(() => {
+                if (obj.msg) {
+                    msgObj = obj
+                }
+            })
+            .always(() => {
+                getNext()
+            })
     }
     getNext()
 
@@ -125,10 +124,10 @@ export class IORule {
                 defer.reject()
             }
         })
-        .fail(() => {
-            me.msg = 'request timeout'
-            defer.reject()
-        })
+            .fail(() => {
+                me.msg = 'request timeout'
+                defer.reject()
+            })
 
         return defer
     }
@@ -142,9 +141,9 @@ export class NotRule {
         this.rule.check(control).done(() => {
             defer.reject()
         })
-        .fail(() => {
-            defer.resolve()
-        })
+            .fail(() => {
+                defer.resolve()
+            })
 
         return defer
     }
@@ -162,7 +161,7 @@ export class AndRule {
     }
     check(control) {
         var me = this
-        return serialAnd(this.rules, control).fail(rule=> {
+        return serialAnd(this.rules, control).fail(rule => {
             me.msg = rule.msg
         })
     }
@@ -174,7 +173,7 @@ export class OrRule extends AndRule {
     }
     check(control) {
         var me = this
-        return serialOr(this.rules, control).fail(rule=> {
+        return serialOr(this.rules, control).fail(rule => {
             if (rule) {
                 me.msg = rule.msg
             }
@@ -260,13 +259,15 @@ class Control {
 export class TextControl extends Control {
     $ele
     rules = []
-    triggerType = 'blur'
 
     constructor($ele) {
         super()
         this.$ele = $($ele)
         this.initStarsEvent()
         this.bindEvents()
+    }
+    getTriggerType() {
+        return 'blur'
     }
     setTipEle($tipEle) {
         this.$tipEle = $($tipEle)
@@ -323,16 +324,16 @@ export class TextControl extends Control {
         return andRule.check(this).done(() => {
             me.execCallback(true)
         })
-        .fail(() => {
-            me.execCallback(false)
-        })
-        .always(() => {
-            me.showTip(andRule.msg)
-        })
+            .fail(() => {
+                me.execCallback(false)
+            })
+            .always(() => {
+                me.showTip(andRule.msg)
+            })
     }
     bindEvents() {
         var me = this
-        var eventType = 'stars-' + me.triggerType
+        var eventType = 'stars-' + me.getTriggerType()
         me.$ele.off(eventType).on(eventType, () => {
             me.check()
         })
@@ -348,7 +349,9 @@ export class TextControl extends Control {
 }
 
 export class SelectControl extends TextControl {
-    triggerType = 'change'
+    getTriggerType() {
+        return 'change'
+    }
     constructor($ele) {
         super($ele)
     }
