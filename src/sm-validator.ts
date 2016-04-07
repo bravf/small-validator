@@ -241,7 +241,10 @@ class Control {
             }
         }
     }
-
+    setTipEle($tipEle) {
+        this.$tipEle = $($tipEle)
+        return this
+    }
     showTip(msg) {
         this.msg = msg
         this.$tipEle.html(msg).hide()
@@ -268,10 +271,6 @@ export class TextControl extends Control {
     }
     getTriggerType() {
         return 'blur'
-    }
-    setTipEle($tipEle) {
-        this.$tipEle = $($tipEle)
-        return this
     }
     add(...rules) {
         this.rules = this.rules.concat(rules)
@@ -579,8 +578,8 @@ export function any($eles, msg) {
     $eles = $($eles)
     var orControlObj = new OrControl
 
-    $eles.each(() => {
-        var me = $(this)
+    $eles.each((_, ele) => {
+        var me = $(ele)
         orControlObj.add(control(me).add(required(msg)))
     })
 

@@ -250,6 +250,10 @@ var Control = (function () {
             }
         }
     };
+    Control.prototype.setTipEle = function ($tipEle) {
+        this.$tipEle = $($tipEle);
+        return this;
+    };
     Control.prototype.showTip = function (msg) {
         this.msg = msg;
         this.$tipEle.html(msg).hide();
@@ -274,10 +278,6 @@ var TextControl = (function (_super) {
     }
     TextControl.prototype.getTriggerType = function () {
         return 'blur';
-    };
-    TextControl.prototype.setTipEle = function ($tipEle) {
-        this.$tipEle = $($tipEle);
-        return this;
     };
     TextControl.prototype.add = function () {
         var rules = [];
@@ -593,11 +593,10 @@ function length(range, msg) {
 }
 exports.length = length;
 function any($eles, msg) {
-    var _this = this;
     $eles = $($eles);
     var orControlObj = new OrControl;
-    $eles.each(function () {
-        var me = $(_this);
+    $eles.each(function (_, ele) {
+        var me = $(ele);
         orControlObj.add(control(me).add(required(msg)));
     });
     return orControlObj;
