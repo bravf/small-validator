@@ -540,6 +540,9 @@ export function required(msg) {
             var value = control.val()
             return (value != '-1') && (value != '')
         }
+        else if (eleType == 'select-multiple') {
+            return control.val().length > 0
+        }
         else if (eleType == 'file') {
             return $ele[0].files.length != 0
         }
