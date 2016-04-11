@@ -16,9 +16,9 @@ function serialAnd(objs, control) {
         obj.check(control).done(() => {
             getNext()
         })
-            .fail(() => {
-                retDefer.reject(obj)
-            })
+        .fail(() => {
+            retDefer.reject(obj)
+        })
     }
     getNext()
 
@@ -47,14 +47,14 @@ function serialOr(objs, control) {
         obj.check(control).done(() => {
             isOk = true
         })
-            .fail(() => {
-                if (obj.msg) {
-                    msgObj = obj
-                }
-            })
-            .always(() => {
-                getNext()
-            })
+        .fail(() => {
+            if (obj.msg) {
+                msgObj = obj
+            }
+        })
+        .always(() => {
+            getNext()
+        })
     }
     getNext()
 
@@ -124,10 +124,10 @@ export class IORule {
                 defer.reject()
             }
         })
-            .fail(() => {
-                me.msg = 'request timeout'
-                defer.reject()
-            })
+        .fail(() => {
+            me.msg = 'request timeout'
+            defer.reject()
+        })
 
         return defer
     }
@@ -141,9 +141,9 @@ export class NotRule {
         this.rule.check(control).done(() => {
             defer.reject()
         })
-            .fail(() => {
-                defer.resolve()
-            })
+        .fail(() => {
+            defer.resolve()
+        })
 
         return defer
     }
@@ -323,12 +323,12 @@ export class TextControl extends Control {
         return andRule.check(this).done(() => {
             me.execCallback(true)
         })
-            .fail(() => {
-                me.execCallback(false)
-            })
-            .always(() => {
-                me.showTip(andRule.msg)
-            })
+        .fail(() => {
+            me.execCallback(false)
+        })
+        .always(() => {
+            me.showTip(andRule.msg)
+        })
     }
     bindEvents() {
         var me = this
@@ -402,12 +402,12 @@ export class AndControl extends Control {
             me.showTip('')
             me.execCallback(true)
         })
-            .fail(control => {
-                if (control) {
-                    me.showTip(control.msg)
-                }
-                me.execCallback(false)
-            })
+        .fail(control => {
+            if (control) {
+                me.showTip(control.msg)
+            }
+            me.execCallback(false)
+        })
     }
 }
 
@@ -421,12 +421,12 @@ export class OrControl extends AndControl {
             me.showTip('')
             me.execCallback(true)
         })
-            .fail(control => {
-                if (control) {
-                    me.showTip(control.msg)
-                }
-                me.execCallback(false)
-            })
+        .fail(control => {
+            if (control) {
+                me.showTip(control.msg)
+            }
+            me.execCallback(false)
+        })
     }
 }
 
@@ -444,9 +444,9 @@ export class FormControl extends AndControl {
         return parallelAnd(this.controls).done(() => {
             me.execCallback(true)
         })
-            .fail(() => {
-                me.execCallback(false)
-            })
+        .fail(() => {
+            me.execCallback(false)
+        })
     }
 }
 
