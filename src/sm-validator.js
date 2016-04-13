@@ -64,12 +64,35 @@ var css = {
     inputError: 'stars-input-error'
 };
 exports.css = css;
-var RegRule = (function () {
+var Rule = (function () {
+    function Rule() {
+        this.display = true;
+    }
+    Rule.prototype.on = function () {
+        this.display = true;
+    };
+    Rule.prototype.off = function () {
+        this.display = false;
+    };
+    Rule.prototype.check = function (control) {
+        if (!this.display) {
+            var defer = $.Deferred();
+            defer.resolve();
+            return defer;
+        }
+        return this.checkSelf(control);
+    };
+    Rule.prototype.checkSelf = function (control) { };
+    return Rule;
+}());
+var RegRule = (function (_super) {
+    __extends(RegRule, _super);
     function RegRule(reg, msg) {
+        _super.call(this);
         this.reg = reg;
         this.msg = msg;
     }
-    RegRule.prototype.check = function (control) {
+    RegRule.prototype.checkSelf = function (control) {
         var defer = $.Deferred();
         if (this.reg.test(control.val())) {
             defer.resolve();
@@ -80,14 +103,16 @@ var RegRule = (function () {
         return defer;
     };
     return RegRule;
-}());
+}(Rule));
 exports.RegRule = RegRule;
-var FuncRule = (function () {
+var FuncRule = (function (_super) {
+    __extends(FuncRule, _super);
     function FuncRule(func, msg) {
+        _super.call(this);
         this.func = func;
         this.msg = msg;
     }
-    FuncRule.prototype.check = function (control) {
+    FuncRule.prototype.checkSelf = function (control) {
         var defer = $.Deferred();
         if (this.func(control)) {
             defer.resolve();
@@ -98,17 +123,19 @@ var FuncRule = (function () {
         return defer;
     };
     return FuncRule;
-}());
+}(Rule));
 exports.FuncRule = FuncRule;
-var IORule = (function () {
+var IORule = (function (_super) {
+    __extends(IORule, _super);
     function IORule(url, callback, msg, getParamsFunc) {
         if (getParamsFunc === void 0) { getParamsFunc = Function.prototype; }
+        _super.call(this);
         this.url = url;
         this.callback = callback;
         this.msg = msg;
         this.getParamsFunc = getParamsFunc;
     }
-    IORule.prototype.check = function (control) {
+    IORule.prototype.checkSelf = function (control) {
         var me = this;
         var defer = $.Deferred();
         var params = this.getParamsFunc() || {};
@@ -128,14 +155,16 @@ var IORule = (function () {
         return defer;
     };
     return IORule;
-}());
+}(Rule));
 exports.IORule = IORule;
-var NotRule = (function () {
+var NotRule = (function (_super) {
+    __extends(NotRule, _super);
     function NotRule(rule, msg) {
+        _super.call(this);
         this.rule = rule;
         this.msg = msg;
     }
-    NotRule.prototype.check = function (control) {
+    NotRule.prototype.checkSelf = function (control) {
         var defer = $.Deferred();
         this.rule.check(control).done(function () {
             defer.reject();
@@ -146,14 +175,16 @@ var NotRule = (function () {
         return defer;
     };
     return NotRule;
-}());
+}(Rule));
 exports.NotRule = NotRule;
-var AndRule = (function () {
+var AndRule = (function (_super) {
+    __extends(AndRule, _super);
     function AndRule() {
         var rules = [];
         for (var _a = 0; _a < arguments.length; _a++) {
             rules[_a - 0] = arguments[_a];
         }
+        _super.call(this);
         this.msg = '';
         this.rules = rules;
     }
@@ -165,14 +196,14 @@ var AndRule = (function () {
         this.rules = this.rules.concat(rules);
         return this;
     };
-    AndRule.prototype.check = function (control) {
+    AndRule.prototype.checkSelf = function (control) {
         var me = this;
         return serialAnd(this.rules, control).fail(function (rule) {
             me.msg = rule.msg;
         });
     };
     return AndRule;
-}());
+}(Rule));
 exports.AndRule = AndRule;
 var OrRule = (function (_super) {
     __extends(OrRule, _super);
@@ -183,7 +214,7 @@ var OrRule = (function (_super) {
         }
         _super.apply(this, rules);
     }
-    OrRule.prototype.check = function (control) {
+    OrRule.prototype.checkSelf = function (control) {
         var me = this;
         return serialOr(this.rules, control).fail(function (rule) {
             if (rule) {
@@ -262,6 +293,14 @@ var Control = (function () {
         }
         return this;
     };
+    Control.prototype.on = function () {
+        this.display = true;
+        return this;
+    };
+    Control.prototype.off = function () {
+        this.display = false;
+        return this;
+    };
     Control.prototype.checkSelf = function () { };
     Control.prototype.clearStatus = function () { };
     Control.prototype.bindEvents = function () { };
@@ -292,14 +331,6 @@ var TextControl = (function (_super) {
             return '';
         }
         return $.trim(this.$ele.val()) || this.$ele.attr('data-stars-value') || '';
-    };
-    TextControl.prototype.on = function () {
-        this.display = true;
-        return this;
-    };
-    TextControl.prototype.off = function () {
-        this.display = false;
-        return this;
     };
     TextControl.prototype.initStarsEvent = function () {
         var $ele = this.$ele;
