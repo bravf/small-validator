@@ -16,9 +16,9 @@ function serialAnd(objs, control) {
         obj.check(control).done(() => {
             getNext()
         })
-        .fail(() => {
-            retDefer.reject(obj)
-        })
+            .fail(() => {
+                retDefer.reject(obj)
+            })
     }
     getNext()
 
@@ -47,14 +47,14 @@ function serialOr(objs, control) {
         obj.check(control).done(() => {
             isOk = true
         })
-        .fail(() => {
-            if (obj.msg) {
-                msgObj = obj
-            }
-        })
-        .always(() => {
-            getNext()
-        })
+            .fail(() => {
+                if (obj.msg) {
+                    msgObj = obj
+                }
+            })
+            .always(() => {
+                getNext()
+            })
     }
     getNext()
 
@@ -77,17 +77,17 @@ var css = {
 
 export {css}
 
-class Rule{
+class Rule {
     display = true
 
-    on(){
+    on() {
         this.display = true
     }
-    off(){
+    off() {
         this.display = false
     }
-    check(control){
-        if (!this.display){
+    check(control) {
+        if (!this.display) {
             var defer = $.Deferred()
             defer.resolve()
             return defer
@@ -96,7 +96,7 @@ class Rule{
         return this.checkSelf(control)
     }
 
-    checkSelf(control){}
+    checkSelf(control) { }
 }
 
 export class RegRule extends Rule {
@@ -152,10 +152,10 @@ export class IORule extends Rule {
                 defer.reject()
             }
         })
-        .fail(() => {
-            me.msg = 'request timeout'
-            defer.reject()
-        })
+            .fail(() => {
+                me.msg = 'request timeout'
+                defer.reject()
+            })
 
         return defer
     }
@@ -171,9 +171,9 @@ export class NotRule extends Rule {
         this.rule.check(control).done(() => {
             defer.reject()
         })
-        .fail(() => {
-            defer.resolve()
-        })
+            .fail(() => {
+                defer.resolve()
+            })
 
         return defer
     }
@@ -354,12 +354,12 @@ export class TextControl extends Control {
         return andRule.check(this).done(() => {
             me.execCallback(true)
         })
-        .fail(() => {
-            me.execCallback(false)
-        })
-        .always(() => {
-            me.showTip(andRule.msg)
-        })
+            .fail(() => {
+                me.execCallback(false)
+            })
+            .always(() => {
+                me.showTip(andRule.msg)
+            })
     }
     bindEvents() {
         var me = this
@@ -416,6 +416,7 @@ export class AndControl extends Control {
         return this
     }
     clearStatus() {
+        this.showTip('')
         $(this.controls).each((_i, control) => {
             control.clearStatus()
         })
@@ -433,12 +434,12 @@ export class AndControl extends Control {
             me.showTip('')
             me.execCallback(true)
         })
-        .fail(control => {
-            if (control) {
-                me.showTip(control.msg)
-            }
-            me.execCallback(false)
-        })
+            .fail(control => {
+                if (control) {
+                    me.showTip(control.msg)
+                }
+                me.execCallback(false)
+            })
     }
 }
 
@@ -452,12 +453,12 @@ export class OrControl extends AndControl {
             me.showTip('')
             me.execCallback(true)
         })
-        .fail(control => {
-            if (control) {
-                me.showTip(control.msg)
-            }
-            me.execCallback(false)
-        })
+            .fail(control => {
+                if (control) {
+                    me.showTip(control.msg)
+                }
+                me.execCallback(false)
+            })
     }
 }
 
@@ -475,9 +476,9 @@ export class FormControl extends AndControl {
         return parallelAnd(this.controls).done(() => {
             me.execCallback(true)
         })
-        .fail(() => {
-            me.execCallback(false)
-        })
+            .fail(() => {
+                me.execCallback(false)
+            })
     }
 }
 

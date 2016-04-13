@@ -434,6 +434,7 @@ var AndControl = (function (_super) {
         return this;
     };
     AndControl.prototype.clearStatus = function () {
+        this.showTip('');
         $(this.controls).each(function (_i, control) {
             control.clearStatus();
         });
