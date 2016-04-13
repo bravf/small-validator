@@ -77,9 +77,33 @@ var css = {
 
 export {css}
 
-export class RegRule {
-    constructor(public reg: RegExp, public msg: string) { }
-    check(control) {
+class Rule{
+    display = true
+
+    on(){
+        this.display = true
+    }
+    off(){
+        this.display = false
+    }
+    check(control){
+        if (!this.display){
+            var defer = $.Deferred()
+            defer.resolve()
+            return defer
+        }
+
+        return this.checkSelf(control)
+    }
+
+    checkSelf(control){}
+}
+
+export class RegRule extends Rule {
+    constructor(public reg: RegExp, public msg: string) {
+        super()
+    }
+    checkSelf(control) {
         var defer = $.Deferred()
 
         if (this.reg.test(control.val())) {
@@ -92,9 +116,11 @@ export class RegRule {
     }
 }
 
-export class FuncRule {
-    constructor(public func: Function, public msg: string) { }
-    check(control) {
+export class FuncRule extends Rule {
+    constructor(public func: Function, public msg: string) {
+        super()
+    }
+    checkSelf(control) {
         var defer = $.Deferred()
 
         if (this.func(control)) {
@@ -107,9 +133,11 @@ export class FuncRule {
     }
 }
 
-export class IORule {
-    constructor(public url: string, public callback: Function, public msg: string, public getParamsFunc: Function = Function.prototype) { }
-    check(control) {
+export class IORule extends Rule {
+    constructor(public url: string, public callback: Function, public msg: string, public getParamsFunc: Function = Function.prototype) {
+        super()
+    }
+    checkSelf(control) {
         var me = this
         var defer = $.Deferred()
         var params = this.getParamsFunc() || {}
@@ -133,9 +161,11 @@ export class IORule {
     }
 }
 
-export class NotRule {
-    constructor(public rule, public msg: string) { }
-    check(control) {
+export class NotRule extends Rule {
+    constructor(public rule, public msg: string) {
+        super()
+    }
+    checkSelf(control) {
         var defer = $.Deferred()
 
         this.rule.check(control).done(() => {
@@ -149,17 +179,18 @@ export class NotRule {
     }
 }
 
-export class AndRule {
+export class AndRule extends Rule {
     msg: string = ''
     rules
     constructor(...rules) {
+        super()
         this.rules = rules
     }
     add(...rules) {
         this.rules = this.rules.concat(rules)
         return this
     }
-    check(control) {
+    checkSelf(control) {
         var me = this
         return serialAnd(this.rules, control).fail(rule => {
             me.msg = rule.msg
@@ -171,7 +202,7 @@ export class OrRule extends AndRule {
     constructor(...rules) {
         super(...rules)
     }
-    check(control) {
+    checkSelf(control) {
         var me = this
         return serialOr(this.rules, control).fail(rule => {
             if (rule) {
@@ -253,6 +284,14 @@ class Control {
         }
         return this
     }
+    on() {
+        this.display = true
+        return this
+    }
+    off() {
+        this.display = false
+        return this
+    }
 
     checkSelf() { }
     clearStatus() { }
@@ -281,14 +320,6 @@ export class TextControl extends Control {
             return ''
         }
         return $.trim(this.$ele.val()) || this.$ele.attr('data-stars-value') || ''
-    }
-    on() {
-        this.display = true
-        return this
-    }
-    off() {
-        this.display = false
-        return this
     }
     initStarsEvent() {
         var $ele = this.$ele
